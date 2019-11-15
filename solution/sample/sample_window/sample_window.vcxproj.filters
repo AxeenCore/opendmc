@@ -15,30 +15,24 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\source\opendmc\conf\include\opendmc\conf\typedef.hh">
+    <ClInclude Include="..\..\..\source\sample\sample_window\define.hh">
       <Filter>標頭檔</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\source\opendmc\conf\include\opendmc\conf\unfuncdef.hh">
+    <ClInclude Include="..\..\..\source\sample\sample_window\apps.hh">
       <Filter>標頭檔</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\source\opendmc\conf\include\opendmc\conf\configure.hh">
-      <Filter>標頭檔</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\opendmc\conf\include\opendmc\conf\macros.hh">
-      <Filter>標頭檔</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\opendmc\conf\include\opendmc\conf\windows.hh">
-      <Filter>標頭檔</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\opendmc\conf\include\opendmc\opendmc_conf.hh">
-      <Filter>標頭檔</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\opendmc\conf\include\opendmc\conf\setting.hh">
+    <ClInclude Include="..\..\..\source\sample\sample_window\frame.hh">
       <Filter>標頭檔</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\source\opendmc\conf\object.cc">
+    <ClCompile Include="..\..\..\source\sample\sample_window\main.cc">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\sample\sample_window\apps.cc">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\sample\sample_window\frame.cc">
       <Filter>來源檔案</Filter>
     </ClCompile>
   </ItemGroup>

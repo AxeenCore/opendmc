@@ -9,12 +9,6 @@
 #define	ODMC_CONF_CONFIGURE_HH
 
 /**
- *	OpenDMC 設定項目
- */
-#define ODMC_USES_DEBUGCONSOLE
-#define ODMC_USES_XPSTYLE
-
-/**
  *	配置 C++ 編譯器識別符
  *	Set C++ symbol
  */
