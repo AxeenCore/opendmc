@@ -1,2 +1,2 @@
-# opendmc
+# OpenDMC
 OpenDMC - Open Digital Media Computing
