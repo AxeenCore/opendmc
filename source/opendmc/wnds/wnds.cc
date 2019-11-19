@@ -393,8 +393,8 @@ BOOL DmWnds::CreateControls(const WNDSCTRLS* smPtr)
 		}
 
 		// 設定視窗擴展 ExStyle
-		dwStyle = smPtr->hParent ? static_cast<DWORD>(WINS_COMMON_CHILD_STYLE) : static_cast<DWORD>(WINS_COMMON_STYLE);
-		dwExStyle = smPtr->dwExStyle | static_cast<DWORD>(WINS_COMMON_CHILD_EXSTYLE);
+		dwStyle = smPtr->hParent ? static_cast<DWORD>(WNDS_COMMON_CHILD_STYLE) : static_cast<DWORD>(WNDS_COMMON_STYLE);
+		dwExStyle = smPtr->dwExStyle | static_cast<DWORD>(WNDS_COMMON_CHILD_EXSTYLE);
 		dwStyle |= smPtr->dwStyle;
 
 		// 建立控制項，使用 Win32 API CreateWindowEx

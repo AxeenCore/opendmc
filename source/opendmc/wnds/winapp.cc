@@ -119,7 +119,7 @@ LONG_PTR DmWinapp::GetMainframe() const
  */
 BOOL DmWinapp::InitComponent()
 {
-	const TCHAR* szCaption = TEXT("Dmlibrary - dm_winc");
+	const TCHAR* szCaption = TEXT("opendmc_wnds");
 	const TCHAR* szText = TEXT("Oops! this virtual member function must inheritance,  and programming in derived class.");
 	::MessageBox(NULL, szText, szCaption, MB_ICONHAND | MB_OK);
 	return FALSE;
