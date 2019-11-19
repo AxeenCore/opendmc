@@ -42,7 +42,7 @@ public:
 	BOOL IsWindow() const { return ::IsWindow(m_hWnd); }			//!< 此類別物件視窗操作代碼是否存活中
 	BOOL IsModal()	const { return m_bModal; }						//!< 此類別物件是否為 Dialog Modal 模式
 
-	BOOL PostWinsCreateMessage(WPARAM wParam = 0, LPARAM lParam = 0) const;
+	BOOL PostUserCreateMessage(WPARAM wParam = 0, LPARAM lParam = 0) const;
 	BOOL CreateSafeFont(const TCHAR* szFacePtr, int nSize, BOOL bBlod, int nCharset = DEFAULT_CHARSET);
 	void DeleteSafeFont();
 
@@ -209,17 +209,15 @@ public:
 	HWND	WindowFromPoint(POINT stPoint) const;
 
 protected:
+	/* Windows Callback 訊息處理 */
 	LRESULT DefaultWndProc(UINT uMessage, WPARAM wParam, LPARAM lParam);
-	virtual void	DoSafeRelease() = 0;
-	virtual void	WmClose(WPARAM wParam, LPARAM lParam);
-	virtual void	WmCommand(WPARAM wParam, LPARAM lParam);
-	virtual LRESULT WmCreate(WPARAM wParam, LPARAM lParam);
-	virtual void	WmDestroy(WPARAM wParam, LPARAM lParam);
-	virtual void	WmNotify(WPARAM wParam, LPARAM lParam);
+	virtual void	SafeUserRelease() = 0;
 	virtual LRESULT	WmNcCreate(WPARAM wParam, LPARAM lParam);
+	virtual LRESULT	WmCreate(WPARAM wParam, LPARAM lParam);
+	virtual void	WmDestroy(WPARAM wParam, LPARAM lParam);
 	virtual void	WmNcDestroy(WPARAM wParam, LPARAM lParam);
-	virtual void	WmSize(WPARAM wParam, LPARAM lParam);
-	virtual void	WmWinsCreate(WPARAM wParam, LPARAM lParam);
+	virtual	void	WmClose(WPARAM wParam, LPARAM lParam);
+	virtual void	WmUserCreate(WPARAM wParam, LPARAM lParam);
 	virtual LRESULT WndProc(UINT uMessage, WPARAM wParam, LPARAM lParam);
 
 	virtual void SetSafeType(EmCtrls eType);
@@ -229,9 +227,9 @@ protected:
 	virtual BOOL BindWindow(HWND hWnd);
 	virtual void LooseWindow();
 
-	void RequestToDestroy(int nExitCode);
-	void RequestToRelease();
-	void WaitingDestroy();
+	void SafeWndsDestroy(int nExitCode = 0);
+	void SafeWndsRelease();
+	void SafeWndsWaiting();
 
 	BOOL SafeRegisterClass(const WNDSFRAME* smPtr);
 	HWND SafeCreateWindows(const WNDSFRAME* smPtr);

@@ -9,7 +9,10 @@
 #define	ODMC_WNDS_STRUCT_HH
 
 // 視窗訊息，使用者自定義訊息
-#define UWM_WINSCREATE						(WM_APP + 0x3F01)	//!< 建立視窗訊息
+#ifdef WM_USERCREATE
+#undef WM_USERCREATE
+#endif
+#define WM_USERCREATE						(WM_APP + 0x3F01)	//!< 建立視窗訊息
 
 // 視窗樣式
 #define WINS_COMMON_STYLE					WS_VISIBLE | WS_CLIPSIBLINGS
@@ -18,8 +21,8 @@
 
 
 // 常用數值定義
-#define WINS_DESTORY_OVERTIME	1000		//!< 等待視窗結束最大等待回合數
-#define WINS_DESTROY_WAITING	50			//!< 等待視窗結束，回合間時間差 (ms)
+#define WNDS_DESTORY_OVERTIME	1000		//!< 等待視窗結束最大等待回合數
+#define WNDS_DESTROY_WAITING	50			//!< 等待視窗結束，回合間時間差 (ms)
 
 #define MAX_NULL_STRING			2			//!< 預留 NULL 字串結尾字元數
 #define MAX_TAB_STRING			80			//!< 標籤最大字元數 (字串長度)，單位 TCHAR

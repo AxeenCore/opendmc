@@ -28,8 +28,7 @@ public:
 protected:
 	INT_PTR DefaultDlgProc(UINT uMessage, WPARAM wParam, LPARAM lParam);
 	virtual BOOL WmInitDialog(WPARAM wParam, LPARAM lParam);
-	virtual void WmCommand(WPARAM wParam, LPARAM lParam) override;
-	virtual void WmWinsCreate(WPARAM wParam, LPARAM lParam) override;
+	virtual void WmUserCreate(WPARAM wParam, LPARAM lParam) override;
 	virtual INT_PTR DlgProc(UINT uMessage, WPARAM wParam, LPARAM lParam);
 
 	BOOL BindWindow(HWND hWnd) final;

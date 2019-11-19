@@ -17,12 +17,7 @@ DmProgressBar::DmProgressBar() : DmWnds() { }
  *	@brief	DmProgressBar 解構式
  *	@return	此函數沒有返回值
  */
-DmProgressBar::~DmProgressBar()
-{
-	if (this->IsWindow()) {
-		this->RequestToDestroy(0);
-	}
-}
+DmProgressBar::~DmProgressBar() { this->SafeWndsDestroy(); }
 
 /**
  *	@brief	OffsetPos

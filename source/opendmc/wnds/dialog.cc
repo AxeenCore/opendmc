@@ -18,12 +18,7 @@ DmDialog::DmDialog() : DmWnds(EmCtrls::Dialog) { }
  *	@return 此函數沒有返回值
  *	@remark 解構時，進行釋放(銷毀)控制項
  */
-DmDialog::~DmDialog()
-{
-	if (this->IsWindow()) {
-		this->RequestToDestroy(0);
-	}
-}
+DmDialog::~DmDialog() { this->SafeWndsDestroy(); }
 
 /**
  *	@brief 建立 Modal 對話框
@@ -197,23 +192,20 @@ INT_PTR DmDialog::DefaultDlgProc(UINT uMessage, WPARAM wParam, LPARAM lParam)
 
 	switch (uMessage)
 	{
+	case WM_INITDIALOG:
+		lResult = static_cast<INT_PTR>(this->WmInitDialog(wParam, lParam));
+		break;
 	case WM_DESTROY:
 		this->WmDestroy(wParam, lParam);
-		break;
-	case WM_CLOSE:
-		this->WmClose(wParam, lParam);
 		break;
 	case WM_NCDESTROY:
 		this->WmNcDestroy(wParam, lParam);
 		break;
-	case WM_INITDIALOG:
-		lResult = static_cast<INT_PTR>(this->WmInitDialog(wParam, lParam));
+	case WM_CLOSE:
+		this->WmClose(wParam, lParam);
 		break;
-	case WM_COMMAND:
-		this->WmCommand(wParam, lParam);
-		break;
-	case UWM_WINSCREATE:
-		this->WmWinsCreate(wParam, lParam);
+	case WM_USERCREATE:
+		this->WmUserCreate(wParam, lParam);
 		break;
 	default:
 		lResult = 0;
@@ -232,50 +224,17 @@ BOOL DmDialog::WmInitDialog(WPARAM wParam, LPARAM lParam)
 {
 	UNREFERENCED_PARAMETER(wParam);
 	UNREFERENCED_PARAMETER(lParam);
-	this->PostWinsCreateMessage(wParam, lParam);
+	this->PostUserCreateMessage(wParam, lParam);
 	return TRUE;
 }
 
 /**
- *	@brief <b>[虛擬函數]</b> WM_COMMAND 訊息處理，當用戶點選 Menu 或其他控制項時會向父視窗發出訊息。
- *	@param[in] wParam see remark
- *	@param[in] lParam see remark
- *	@return 此函數沒有返回值
- *	@remark <b>參數說明</b>
- *		<pre>
- *		Message Source	|	wParam (high word)	|	wParam (low word)				|	lParam
- *						|						|									|
- *		Menu			|	0					|	Menu identifier (IDM_*)			|	0
- *						|						|									|
- *		Accelerator		|	1					|	Accelerator identifier (IDM_*)	|	0
- *						|						|									|
- *		Control			|	Control-defined		|	Control identifier				|	Handle to the control window
- *						|	notification code	|									|
- *		</pre>
- */
-void DmDialog::WmCommand(WPARAM wParam, LPARAM lParam)
-{
-	UNREFERENCED_PARAMETER(lParam);
-	auto uIDCItem = static_cast<UINT>(LOWORD(wParam));
-
-	switch (uIDCItem)
-	{
-	case IDOK:
-		this->RequestToDestroy(0);
-		break;
-	case IDCANCEL:
-		this->RequestToDestroy(0);
-		break;
-	}
-}
-
-/**
- *	@brief <b>[重載]</b> 使用者訊息 UWM_WINCCREATE，建立視窗內容
+ *	@brief <b>[重載]</b> 使用者訊息 UWM_USERCREATE，建立視窗內容
  *	@param[in] wParam 未使用
  *	@param[in] lParam 未使用
  *	@return 此函數沒有返回值
  */
-void DmDialog::WmWinsCreate(WPARAM wParam, LPARAM lParam)
+void DmDialog::WmUserCreate(WPARAM wParam, LPARAM lParam)
 {
 	UNREFERENCED_PARAMETER(wParam);
 	UNREFERENCED_PARAMETER(lParam);

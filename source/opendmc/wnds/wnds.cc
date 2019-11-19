@@ -40,12 +40,7 @@ DmWnds::DmWnds(EmCtrls eType)
  *	@brief DmWnds 解構式
  *	@remark 解構時，釋放(銷毀)控制項
  */
-DmWnds::~DmWnds()
-{
-	if (this->IsWindow()) {
-		this->RequestToDestroy(0);
-	}
-}
+DmWnds::~DmWnds() { this->SafeWndsDestroy(); }
 
 /**
  *	@brief [虛擬函數] 連接已存在的視窗或控制項
@@ -58,7 +53,7 @@ BOOL DmWnds::Attach(HWND hWnd)
 	auto bResult = this->BindWindow(hWnd);
 
 	if (bResult) {
-		this->PostWinsCreateMessage();
+		this->PostUserCreateMessage();
 	}
 	return bResult;
 }
@@ -76,7 +71,7 @@ BOOL DmWnds::AttachDlgItem(HWND hWndParent, int nIDCItem)
 	auto bResult = this->BindWindow(hWnd);
 
 	if (bResult) {
-		this->PostWinsCreateMessage();
+		this->PostUserCreateMessage();
 	}
 	return bResult;
 }
@@ -85,7 +80,7 @@ BOOL DmWnds::AttachDlgItem(HWND hWndParent, int nIDCItem)
  *	@brief 斷開連接，配合 Attach 函數使用。
  *	@return 此函數沒有返回值
  */
-void DmWnds::Detach() { this->RequestToRelease(); }
+void DmWnds::Detach() { this->SafeWndsRelease(); }
 
 /**
  *	@brief [虛擬函數] 建立控制項，內容由繼承者發展，基底永遠返回零。
@@ -429,22 +424,22 @@ BOOL DmWnds::CreateControls(const WNDSCTRLS* smPtr)
 		}
 
 		// 發出綁定後，建立視窗訊息
-		this->PostWinsCreateMessage();
+		this->PostUserCreateMessage();
 		break;
 	}
 	return hCtrl != NULL;
 }
 
 /**
- *	@brief 發出 UWM_WINCCREATE 訊息，用來告知建立視窗內容。
+ *	@brief 發出 WM_USERCREATE 訊息，用來告知建立視窗內容。
  *	@param[in] wParam 未使用，必須為零。
  *	@param[in] lParam 未使用，必須為零。
  *	@return <b>型別: BOOL</b> \n 若運作成功返回值為非零值，若運作失敗則返回值為零。
  */
-BOOL DmWnds::PostWinsCreateMessage(WPARAM wParam, LPARAM lParam) const
+BOOL DmWnds::PostUserCreateMessage(WPARAM wParam, LPARAM lParam) const
 {
 	assert(this->IsWindow());
-	return ::PostMessage(*this, UWM_WINSCREATE, wParam, lParam);
+	return ::PostMessage(*this, WM_USERCREATE, wParam, lParam);
 }
 
 /**
@@ -2799,32 +2794,23 @@ LRESULT DmWnds::DefaultWndProc(UINT uMessage, WPARAM wParam, LPARAM lParam)
 
 	switch (uMessage)
 	{
+	case WM_NCCREATE:
+		lResult = this->WmNcCreate(wParam, lParam);
+		break;
 	case WM_CREATE:
 		lResult = this->WmCreate(wParam, lParam);
 		break;
 	case WM_DESTROY:
 		this->WmDestroy(wParam, lParam);
 		break;
-	//case WM_SIZE:
-	//	this->WxSize(wParam, lParam);
-	//	break;
-	case WM_CLOSE:
-		this->WmClose(wParam, lParam);
-		break;
-	//case WM_NOTIFY:
-	//	this->WxNotify(wParam, lParam);
-	//	break;
-	case WM_NCCREATE:
-		lResult = this->WmNcCreate(wParam, lParam);
-		break;
 	case WM_NCDESTROY:
 		this->WmNcDestroy(wParam, lParam);
 		break;
-	//case WM_COMMAND:
-	//	this->WxCommand(wParam, lParam);
-	//	break;
-	case UWM_WINSCREATE:
-		this->WmWinsCreate(wParam, lParam);
+	case WM_CLOSE:
+		this->WmClose(wParam, lParam);
+		break;
+	case WM_USERCREATE:
+		this->WmUserCreate(wParam, lParam);
 		break;
 	default:
 		// 呼叫原視窗處理函數
@@ -2836,84 +2822,6 @@ LRESULT DmWnds::DefaultWndProc(UINT uMessage, WPARAM wParam, LPARAM lParam)
 		return ::DefWindowProc(*this, uMessage, wParam, lParam);
 	}
 	return lResult;
-}
-
-/**
- *	@brief [虛擬函數] WM_CLOSE 訊息處理，視窗被關閉通知。可在衍生類別可重載複寫此函數。
- *	@param[in] wParam 未使用。
- *	@param[in] lParam 未使用。
- *	@return 此函數沒有返回值
- */
-void DmWnds::WmClose(WPARAM wParam, LPARAM lParam)
-{
-	UNREFERENCED_PARAMETER(wParam);
-	UNREFERENCED_PARAMETER(lParam);
-	this->RequestToDestroy(0);
-}
-
-/**
- *	@brief [虛擬函數] WM_COMMAND 訊息處理，當用戶點選 Menu 或其他控制項時會向父視窗發出訊息。
- *	@param[in] wParam see remark
- *	@param[in] lParam see remark
- *	@return 此函數沒有返回值
- *	@remark <b>參數說明</b>
- *		<pre>
- *		Message Source	|	wParam (high word)	|	wParam (low word)				|	lParam
- *						|						|									|
- *		Menu			|	0					|	Menu identifier (IDM_*)			|	0
- *						|						|									|
- *		Accelerator		|	1					|	Accelerator identifier (IDM_*)	|	0
- *						|						|									|
- *		Control			|	Control-defined		|	Control identifier				|	Handle to the control window
- *						|	notification code	|									|
- *		</pre>
- */
-void DmWnds::WmCommand(WPARAM wParam, LPARAM lParam)
-{
-	UNREFERENCED_PARAMETER(wParam);
-	UNREFERENCED_PARAMETER(lParam);
-}
-
-/**
- *	@brief [虛擬函數] WM_CREATE 訊息處理，視窗或控制項使用 CreateWindow 或 CreateWindowEx API 建立成功時通知，衍生類別應該重載複寫此函數。
- *	@param[in] wParam	此參數未使用
- *	@param[in] lParam	指向 CREATESTRUCT 結構資料位址, 內容為正在建立的視窗或控制項的訊息.
- *	@return <b>型別: LRESULT</b>
- *		\n 若進行處理此訊息則必須返回零，以便繼續完成視窗建立過程。
- *		\n 若返回 (-1) 值, 則視為窗建立失敗，返回後視窗將被銷毀，使用 CreateWindowEx 或 CreateWindow 建立視窗的函數將收到 NULL 返回值。
- */
-LRESULT DmWnds::WmCreate(WPARAM wParam, LPARAM lParam)
-{
-	// 什麼事都不做，留給建立者補足。
-	//UNREFERENCED_PARAMETER(wParam);
-	//UNREFERENCED_PARAMETER(lParam);
-	this->PostWinsCreateMessage(wParam, lParam);
-	return 0;
-}
-
-/**
- *	@brief [虛擬函數] WM_DESTROY 訊息處理，視窗已被銷毀通知，可在衍生類別可重載複寫此函數。
- *	@param[in] wParam 未使用。
- *	@param[in] lParam 未使用。
- *	@return 此函數沒有返回值
- */
-void DmWnds::WmDestroy(WPARAM wParam, LPARAM lParam)
-{
-	UNREFERENCED_PARAMETER(wParam);
-	UNREFERENCED_PARAMETER(lParam);
-}
-
-/**
- *	@brief [虛擬函數] WM_NOTIFY 訊息處理，來自子控制項的通知訊息
- *	@param[in] wParam	子項目識別碼 (ID)，訊息來源的子項目識別碼。
- *	@param[in] lParam	指向結構 NMHDR 的緩衝區位址。
- *	@return 此函數沒有返回值
- */
-void DmWnds::WmNotify(WPARAM wParam, LPARAM lParam)
-{
-	// 由繼承者繼成後發展。
-	UNREFERENCED_PARAMETER(wParam);
-	UNREFERENCED_PARAMETER(lParam);
 }
 
 /**
@@ -2933,6 +2841,35 @@ LRESULT DmWnds::WmNcCreate(WPARAM wParam, LPARAM lParam)
 }
 
 /**
+ *	@brief [虛擬函數] WM_CREATE 訊息處理，視窗或控制項使用 CreateWindow 或 CreateWindowEx API 建立成功時通知，衍生類別應該重載複寫此函數。
+ *	@param[in] wParam	此參數未使用
+ *	@param[in] lParam	指向 CREATESTRUCT 結構資料位址, 內容為正在建立的視窗或控制項的訊息.
+ *	@return <b>型別: LRESULT</b>
+ *		\n 若進行處理此訊息則必須返回零，以便繼續完成視窗建立過程。
+ *		\n 若返回 (-1) 值, 則視為窗建立失敗，返回後視窗將被銷毀，使用 CreateWindowEx 或 CreateWindow 建立視窗的函數將收到 NULL 返回值。
+ */
+LRESULT DmWnds::WmCreate(WPARAM wParam, LPARAM lParam)
+{
+	// 什麼事都不做，留給建立者補足。
+	//UNREFERENCED_PARAMETER(wParam);
+	//UNREFERENCED_PARAMETER(lParam);
+	this->PostUserCreateMessage(wParam, lParam);
+	return 0;
+}
+
+/**
+ *	@brief [虛擬函數] WM_DESTROY 訊息處理，視窗已被銷毀通知，可在衍生類別可重載複寫此函數。
+ *	@param[in] wParam 未使用。
+ *	@param[in] lParam 未使用。
+ *	@return 此函數沒有返回值
+ */
+void DmWnds::WmDestroy(WPARAM wParam, LPARAM lParam)
+{
+	UNREFERENCED_PARAMETER(wParam);
+	UNREFERENCED_PARAMETER(lParam);
+}
+
+/**
  *	@brief [虛擬函數] WM_NCDESTROY 訊息處理，Window 被銷毀最後會收到的訊息。
  *	@param[in] wParam 不使用
  *	@param[in] lParam 不使用
@@ -2943,27 +2880,20 @@ void DmWnds::WmNcDestroy(WPARAM wParam, LPARAM lParam)
 	UNREFERENCED_PARAMETER(wParam);
 	UNREFERENCED_PARAMETER(lParam);
 	// 釋放所有資源與物件，恢復所有預設。
-	this->RequestToRelease();
+	this->SafeWndsRelease();
 }
 
 /**
- *	@brief [虛擬函數] WM_SIZE 訊息處理，視窗尺寸大小變更通知。
- *	@param[in] wParam 調整邊界尺寸大小類型
- *		- SIZE_MAXHIDE		\n 值 = 4, Message is sent to all pop-up windows when some other window is maximized.
- *		- SIZE_MAXIMIZED	\n 值 = 2, The window has been maximized.
- *		- SIZE_MAXSHOW		\n 值 = 3, Message is sent to all pop-up windows when some other window has been restored to its former size.
- *		- SIZE_MINIMIZED	\n 值 = 1, The window has been minimized.
- *		- SIZE_RESTORED		\n 值 = 0, The window has been resized, but neither the SIZE_MINIMIZED nor SIZE_MAXIMIZED value applies.
- *	@param[in] lParam 邊界尺寸資訊
- *		- LOWORD(lParam) 為新的視窗工作區寬度
- *		- HIWORD(wParam) 為新的視窗工作區高度
+ *	@brief [虛擬函數] WM_CLOSE 訊息處理，視窗被關閉通知。可在衍生類別可重載複寫此函數。
+ *	@param[in] wParam 未使用。
+ *	@param[in] lParam 未使用。
  *	@return 此函數沒有返回值
  */
-void DmWnds::WmSize(WPARAM wParam, LPARAM lParam)
+void DmWnds::WmClose(WPARAM wParam, LPARAM lParam)
 {
-	// 不動作，由繼承者依需求作業。
 	UNREFERENCED_PARAMETER(wParam);
 	UNREFERENCED_PARAMETER(lParam);
+	this->SafeWndsDestroy(static_cast<int>(wParam));
 }
 
 /**
@@ -2972,7 +2902,7 @@ void DmWnds::WmSize(WPARAM wParam, LPARAM lParam)
  *	@param[in] lParam 未使用
  *	@return 此函數沒有返回值
  */
-void DmWnds::WmWinsCreate(WPARAM wParam, LPARAM lParam)
+void DmWnds::WmUserCreate(WPARAM wParam, LPARAM lParam)
 {
 	// 由繼承者繼成後發展。
 	UNREFERENCED_PARAMETER(wParam);
@@ -3071,21 +3001,23 @@ void DmWnds::LooseWindow()
  *	@param[in] nExitCode	結束程式返回碼
  *	@return 此函數沒有返回值
  */
-void DmWnds::RequestToDestroy(int nExitCode)
+void DmWnds::SafeWndsDestroy(int nExitCode)
 {
 	if (this->IsWindow()) {
+
+		// Modal's Dialog ??
 		if (m_bModal) {
 			::EndDialog(*this, static_cast<INT_PTR>(nExitCode));
+			return;
 		}
-		else {
-			// 要求銷毀綁定中的控制項(視窗)
-			::DestroyWindow(*this);
-			this->WaitingDestroy();
 
-			// 是主視窗嗎? 若是主視窗則送出結束訊息迴圈訊息。
-			if (::GetWinapp().GetMainframe() == reinterpret_cast<LONG_PTR>(this)) {
-				::PostQuitMessage(nExitCode);
-			}
+		// 要求銷毀綁定中的控制項(視窗)
+		::DestroyWindow(*this);
+		this->SafeWndsWaiting();
+
+		// 是主視窗嗎? 若是主視窗則送出結束訊息迴圈訊息。
+		if (::GetWinapp().GetMainframe() == reinterpret_cast<LONG_PTR>(this)) {
+			::PostQuitMessage(nExitCode);
 		}
 	}
 }
@@ -3094,9 +3026,9 @@ void DmWnds::RequestToDestroy(int nExitCode)
  *	@brief [虛擬函數] 釋放所有物件與資源
  *	@return 此函數沒有返回值
  */
-void DmWnds::RequestToRelease()
+void DmWnds::SafeWndsRelease()
 {
-	this->DoSafeRelease();		// 呼叫 '純' 虛擬函數，繼承者釋放函數。
+	this->SafeUserRelease();	// 呼叫 '純' 虛擬函數，繼承者釋放函數。
 	this->LooseWindow();		// 恢復原先的訊息處理 Callback 函數, 恢復使用者訊息
 	this->DeleteSafeFont();		// 刪除使用者自定義字型
 
@@ -3109,12 +3041,12 @@ void DmWnds::RequestToRelease()
  *	@brief 等待視窗結束
  *	@return	此函數沒有返回值
  */
-void DmWnds::WaitingDestroy()
+void DmWnds::SafeWndsWaiting()
 {
 	// 等待視窗被終結
-	for (int i = 0; i < WINS_DESTORY_OVERTIME; i++) {
+	for (int i = 0; i < WNDS_DESTORY_OVERTIME; i++) {
 		if (!this->IsWindow()) break;
-		::Sleep(WINS_DESTROY_WAITING);
+		::Sleep(WNDS_DESTROY_WAITING);
 	}
 }
 
@@ -3349,12 +3281,12 @@ LRESULT CALLBACK DmWnds::SafeWndProc(HWND hWnd, UINT uMessage, WPARAM wParam, LP
 
 	// 控制項不存在
 	if (dmWnds == NULL) {
-		// 若使用 Win32 API CreateWindow() 或 CreateWindowEx() 建立的視窗或控制項，必定會產生此 WM_CREATE 訊息
+		// 若使用 Win32 API CreateWindow() 或 CreateWindowEx() 建立的視窗或控制項，必定會產生此 WM_NCCREATE, WM_CREATE 訊息
 		if (uMessage == WM_NCCREATE) {
 			// 取得自定義額外參數
-			WNDSPARAM* smPtr = reinterpret_cast<WNDSPARAM*>(reinterpret_cast<CREATESTRUCT*>(lParam)->lpCreateParams);
-			if (smPtr != NULL) {
-				dmWnds = reinterpret_cast<DmWnds*>(smPtr->lParam);
+			WNDSPARAM* cParam = reinterpret_cast<WNDSPARAM*>(reinterpret_cast<CREATESTRUCT*>(lParam)->lpCreateParams);
+			if (cParam != NULL) {
+				dmWnds = reinterpret_cast<DmWnds*>(cParam->lParam);
 				if (dmWnds != NULL) {
 					if (!dmWnds->BindWindow(hWnd)) {
 						// 綁定失敗，返回建立視窗失敗。

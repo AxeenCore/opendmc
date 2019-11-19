@@ -17,7 +17,7 @@ DmListView::DmListView() : DmWnds(EmCtrls::ListView), m_nSelectItemCount(0), m_n
  *	@brief	DmListView 解構式
  *	@return	此函數沒有返回值
  */
-DmListView::~DmListView() { if (this->IsWindow()) { this->RequestToDestroy(0); } }
+DmListView::~DmListView() { this->SafeWndsDestroy(); }
 
 /**
  *	@brief	[重載] 建立一個 ListView (Report 樣式)

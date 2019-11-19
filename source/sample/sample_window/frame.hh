@@ -17,7 +17,7 @@ public:
 
 protected:
 	virtual LRESULT WndProc(UINT uMessage, WPARAM wParam, LPARAM lParam) override;
-	virtual void	DoSafeRelease() override;
+	virtual void	SafeUserRelease() override;
 
 private:
 	CxFrame(const CxFrame&) = delete;				//!< Disable copy construction

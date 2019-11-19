@@ -15,7 +15,7 @@ DmListbox::DmListbox() : DmWnds(EmCtrls::List) { }
 /**
  *	@brief DmListbox 解構式
  */
-DmListbox::~DmListbox() { if (this->IsWindow()) { this->RequestToDestroy(0); } }
+DmListbox::~DmListbox() { this->SafeWndsDestroy(); }
 
 /**
  *	@brief [重載] 建立一個編輯框

@@ -11,4 +11,4 @@
 DmFrame::DmFrame() : DmWnds() { }
 
 //! DmFrame 解構式
-DmFrame::~DmFrame() { if (this->IsWindow()) { this->RequestToDestroy(0); } }
+DmFrame::~DmFrame() { this->SafeWndsDestroy(); }

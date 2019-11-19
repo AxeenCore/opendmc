@@ -15,7 +15,7 @@ CxFrame::CxFrame() { }
 /**
  *	@brief	CxFrame 解構式
  */
-CxFrame::~CxFrame() { { if (this->IsWindow()) { this->RequestToDestroy(0); } } }
+CxFrame::~CxFrame() { this->SafeWndsDestroy(); }
 
 
 LRESULT CxFrame::WndProc(UINT uMessage, WPARAM wParam, LPARAM lParam)
@@ -36,7 +36,7 @@ LRESULT CxFrame::WndProc(UINT uMessage, WPARAM wParam, LPARAM lParam)
 	return lResult;
 }
 
-void CxFrame::DoSafeRelease()
+void CxFrame::SafeUserRelease()
 {
 	// TODO
 }
