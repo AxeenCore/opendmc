@@ -53,15 +53,14 @@
  *	OpenDmc 基礎型別定義
  */
 #if !defined(ODMC_WINDOWS)
-	typedef __int8				INT8,	*PINT8;		//!< 8	位元, 整數型別 (帶正負號)
-	typedef __int16				INT16,	*PINT16;	//!< 16	位元, 整數型別 (帶正負號)
-	typedef __int32				INT32,	*PINT32;	//!< 32 位元, 整數型別 (帶正負號)
-	typedef __int64				INT64,	*PINT64;	//!< 64 位元, 整數型別 (帶正負號)
-	typedef unsigned __int8		UINT8,	*PUINT8;	//!< 8	位元, 整數型別
-	typedef unsigned __int16	UINT16, *PUINT16;	//!< 16	位元, 整數型別
-	typedef unsigned __int32	UINT32, *PUINT32;	//!< 32	位元, 整數型別
-	typedef unsigned __int64	UINT64, *PUINT64;	//!< 64	位元, 整數型別
-
+	typedef __int8				INT8,	SBYTE,	*PINT8;		//!< 8	位元, 整數型別 (帶正負號)
+	typedef __int16				INT16,	SWORD,	*PINT16;	//!< 16	位元, 整數型別 (帶正負號)
+	typedef __int32				INT32,	SDWORD	*PINT32;	//!< 32 位元, 整數型別 (帶正負號)
+	typedef __int64				INT64,	SQWORD,	*PINT64;	//!< 64 位元, 整數型別 (帶正負號)
+	typedef unsigned __int8		UINT8,	BYTE,	*PUINT8;	//!< 8	位元, 整數型別
+	typedef unsigned __int16	UINT16, WORD,	*PUINT16;	//!< 16	位元, 整數型別
+	typedef unsigned __int32	UINT32, DWORD,	*PUINT32;	//!< 32	位元, 整數型別
+	typedef unsigned __int64	UINT64, QWORD,	*PUINT64;	//!< 64	位元, 整數型別
 #	if !defined(ODMC_UNICODE)
 	typedef char				TCHAR;				//!< 字元 - 單位元組
 #	else

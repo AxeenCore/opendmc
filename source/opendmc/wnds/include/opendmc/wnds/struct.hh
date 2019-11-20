@@ -95,7 +95,7 @@ struct WNDSVERINFO {
 typedef WNDSVERINFO* LPWNDSVERINFO;	//!< 結構 WNDSVERINFO 指標型別
 
 /**
- *	@struct	WINSFRAME
+ *	@struct	WNDSFRAME
  *	@brief	建立標準視窗框架結構，依據結構內容，使用 DmWnds 建立對應視窗框架
  */
 struct WNDSFRAME {
@@ -128,7 +128,7 @@ typedef WNDSFRAME*	LPWNDSFRAME;	//!< 結構 WNDSFRAME 指標型態
 #define WNDS_DEFAULT_EXSTYLE		0						//!< 預設視窗延伸樣式
 
 /**
- *	@struct	WINSCTRLS
+ *	@struct	WNDSCTRLS
  *	@brief	建立控制項之結構 constrols，依照結構定義內容建立控制項
  */
 struct WNDSCTRLS {
@@ -147,7 +147,7 @@ struct WNDSCTRLS {
 typedef WNDSCTRLS*	LPWNDSCTRLS;	//!< WINSCTRLS 結構指標型別
 
 /**
- *	@struct WINSPARAM
+ *	@struct WNDSPARAM
  *	@brief 額外參數結構，建立視窗、控制項或對話框時適用。
  */
 struct WNDSPARAM {

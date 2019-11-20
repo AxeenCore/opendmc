@@ -32,7 +32,7 @@
  */
 #define SAFE_FREE(p)            { if (NULL!=(p))  { ::free((void*)(p); (p)=NULL; } }
 #define SAFE_DELETE(p)          { if (NULL!=(p))  { delete (p); (p)=NULL; } }
-#define SAFE_DEARRAY(p)			{ if (NULL!=(p))  { delete [] (p); (p)=NULL; } }
+#define SAFE_DELETEARRAY(p)		{ if (NULL!=(p))  { delete [] (p); (p)=NULL; } }
 #define SAFE_CLOSE_FILE(p)      { if (NULL!=(p))  { ::fclose(p); (p)=NULL; } }
 #define SAFE_CLOSE_HANDLE(p)    { if (NULL!=(p) && INVALID_HANDLE_VALUE!=(p))  { ::CloseHandle(p); (p)=NULL; } }
 
