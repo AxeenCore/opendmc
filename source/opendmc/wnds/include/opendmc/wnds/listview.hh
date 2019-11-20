@@ -81,7 +81,7 @@ public:
 	virtual ~DmListView();
 
 	virtual BOOL Create(const TCHAR* szPtr, int x, int y, int wd, int ht, HWND hWndParent, int nIDCItem) override;
-	virtual BOOL CreateSample() override;
+	virtual BOOL CreateSample();
 
 	// Operations
 	DWORD	ApproximateViewRec(int wd = -1, int ht = -1, int nCount = -1) const;					// LVM_APPROXIMATEVIEWRECT

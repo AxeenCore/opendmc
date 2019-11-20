@@ -57,11 +57,11 @@ DmWinapp::~DmWinapp() {  }
  */
 int DmWinapp::Run()
 {
-	auto nExitCode = (-1);
+	auto nExitCode = static_cast<int>(-1);
 
 	if (this->IsReady()) {
 		if (this->InitComponent()) {
-			nExitCode = this->MessageLoopStandardEx();
+			nExitCode = this->MessageLoopStandard();
 		}
 	}
 	return nExitCode;
@@ -166,17 +166,17 @@ int DmWinapp::MessageLoopStandard()
 	for (;;) {
 		bRet = ::GetMessage(&message, NULL, 0, 0);
 
-		// bRet > 0 表示有訊息必須處理
+		/* bRet > 0 表示有訊息必須處理 */
 		if (bRet > 0) {
-			TranslateMessage(&message);
-			DispatchMessage(&message);
+			::TranslateMessage(&message);
+			::DispatchMessage(&message);
 		}
-		// bRet < 0 表示有錯誤發生
+		/* bRet < 0 表示有錯誤發生 */
 		else if (bRet < 0) {
 			// Handle or log the error; possibly exit
 			// ...
 		}
-		// bRet = 0 表示要結束程式
+		/* bRet = 0 表示要結束程式 */
 		else break;
 	}
 	return static_cast<int>(LOWORD(message.wParam));

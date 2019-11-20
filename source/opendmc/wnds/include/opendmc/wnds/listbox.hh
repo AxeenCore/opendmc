@@ -20,7 +20,7 @@ public:
 	virtual ~DmListbox();
 
 	virtual BOOL Create(const TCHAR* szCaptionPtr, int x, int y, int wd, int ht, HWND hWndParent, int nIDCItem) override;
-	virtual BOOL CreateSample() override;
+	virtual BOOL CreateSample();
 
 	int		AddFile(const TCHAR* filePtr) const;								// LB_ADDFILE
 	int		AddString(const TCHAR* strPtr) const;								// LB_ADDSTRING

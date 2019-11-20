@@ -26,7 +26,6 @@ public:
 
 	virtual BOOL Create(const TCHAR* szPtr, int x, int y, int wd, int ht, HWND hWndParent, int nIDCItem);
 	virtual BOOL CreateEx(DWORD dwExStyle, const TCHAR* szClassPtr, const TCHAR* szCaptionPtr, DWORD dwStyle, int x, int y, int wd, int ht, HWND hWndParent, HMENU hMenuOrIDDItem, void* vParamPtr);
-	virtual BOOL CreateSample();
 
 	virtual EmCtrls		GetSafeType() const;
 	virtual HWND		GetSafeHwnd() const;
@@ -37,7 +36,7 @@ public:
 	BOOL CreateFrame(const WNDSFRAME* smPtr);
 	BOOL CreateControls(const WNDSCTRLS* smPtr);
 
-	// Operations
+	/* Operations function */
 	operator HWND() const { return m_hWnd; };						//!< 取得此類別物件綁定的視窗操作代碼，同 DmWnds::GetSafeHwnd
 	BOOL IsWindow() const { return ::IsWindow(m_hWnd); }			//!< 此類別物件視窗操作代碼是否存活中
 	BOOL IsModal()	const { return m_bModal; }						//!< 此類別物件是否為 Dialog Modal 模式
@@ -46,7 +45,7 @@ public:
 	BOOL CreateSafeFont(const TCHAR* szFacePtr, int nSize, BOOL bBlod, int nCharset = DEFAULT_CHARSET);
 	void DeleteSafeFont();
 
-	// Win32 API
+	/* Win32 Windows controller API */
 	HDC		BeginPaint(PAINTSTRUCT* psPtr) const;
 	BOOL	BringWindowToTop() const;
 
@@ -210,6 +209,7 @@ public:
 
 protected:
 	/* Windows Callback 訊息處理 */
+	LRESULT PassToNextWndProc(UINT uMessage, WPARAM wParam, LPARAM lParam);
 	LRESULT DefaultWndProc(UINT uMessage, WPARAM wParam, LPARAM lParam);
 	virtual void	SafeUserRelease() = 0;
 	virtual LRESULT	WmNcCreate(WPARAM wParam, LPARAM lParam);
@@ -227,6 +227,7 @@ protected:
 	virtual BOOL BindWindow(HWND hWnd);
 	virtual void LooseWindow();
 
+	/* Destory window and release */
 	void SafeWndsDestroy(int nExitCode = 0);
 	void SafeWndsRelease();
 	void SafeWndsWaiting();

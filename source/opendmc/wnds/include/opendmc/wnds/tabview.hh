@@ -32,7 +32,7 @@ public:
 	virtual ~DmTabView();
 
 	virtual BOOL Create(const TCHAR* szCaptionPtr, int x, int y, int wd, int ht, HWND hWndParent, int nIDCItem) override;
-	virtual BOOL CreateSample() override;
+	virtual BOOL CreateSample();
 
 	virtual BOOL AddTabPage(DmWnds* dmPtr, const TCHAR* textPtr, HICON hIcon, UINT uIDTabItem);
 	virtual BOOL AddTabPage(DmWnds* dmPtr, const TCHAR* textPtr, UINT uIDIcon, UINT uIDTabItem);

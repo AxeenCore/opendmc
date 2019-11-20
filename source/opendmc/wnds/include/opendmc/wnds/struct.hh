@@ -102,8 +102,8 @@ struct WNDSFRAME {
 	HINSTANCE		hInstance;		//!< set handle of instance (handle of process module)
 	HWND			hWndParent;		//!< set handle of parent window
 	WNDPROC			fnWndProc;		//!< set a window call-back function pointer, must be NULL
-	TCHAR*			szClassPtr;		//!< pointer of class name
-	TCHAR*			szCaptionPtr;	//!< pointer of window's name
+	const TCHAR*	pszClass;		//!< pointer of class name
+	const TCHAR*	pszCaption;		//!< pointer of window's name
 	int				nPosx;			//!< set display window x-coordinate
 	int				nPosy;			//!< set display window y-coordinate
 	int				nWidth;			//!< set window client-area width

@@ -20,7 +20,7 @@ public:
 	virtual ~DmCombo();
 
 	virtual BOOL Create(const TCHAR* szCaptionPtr, int x, int y, int wd, int ht, HWND hWndParent, int nIDCItem) override;
-	virtual BOOL CreateSample() override;
+	virtual BOOL CreateSample();
 
 	// Operations
 	int		AddItem(LPCTSTR szPtr) const;									// CB_ADDSTRING

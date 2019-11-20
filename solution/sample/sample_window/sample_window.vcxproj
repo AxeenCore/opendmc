@@ -20,33 +20,33 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
-    <ProjectGuid>{3B531792-4520-4868-86C5-44C373F665ED}</ProjectGuid>
+    <ProjectGuid>{DBB4D522-9484-4AF6-AA07-9235D44D06B6}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>opendmcwnds</RootNamespace>
+    <RootNamespace>samplewindow</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>false</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>false</WholeProgramOptimization>
@@ -72,22 +72,22 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>..\..\..\library\x86\debug\</OutDir>
+    <OutDir>..\..\..\bin\x86\debug\$(ProjectName)\</OutDir>
     <IntDir>..\..\..\relay\x86\debug\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\..\..\library\x86\release\</OutDir>
+    <OutDir>..\..\..\bin\x86\release\$(ProjectName)\</OutDir>
     <IntDir>..\..\..\relay\x86\release\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>..\..\..\library\x64\debug\</OutDir>
+    <OutDir>..\..\..\bin\x64\debug\$(ProjectName)\</OutDir>
     <IntDir>..\..\..\relay\x64\debug\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\..\..\library\x64\release\</OutDir>
+    <OutDir>..\..\..\bin\x64\release\$(ProjectName)\</OutDir>
     <IntDir>..\..\..\relay\x64\release\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -95,14 +95,15 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\..\..\source\opendmc\conf\include;..\..\..\source\opendmc\wnds\include</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalIncludeDirectories>..\..\..\source\opendmc\conf\include;..\..\..\source\opendmc\wnds\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>..\..\..\library</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -112,16 +113,17 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\..\..\source\opendmc\conf\include;..\..\..\source\opendmc\wnds\include</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalIncludeDirectories>..\..\..\source\opendmc\conf\include;..\..\..\source\opendmc\wnds\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>..\..\..\library</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -129,14 +131,15 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\..\..\source\opendmc\conf\include;..\..\..\source\opendmc\wnds\include</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalIncludeDirectories>..\..\..\source\opendmc\conf\include;..\..\..\source\opendmc\wnds\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>..\..\..\library</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -146,53 +149,28 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\..\..\source\opendmc\conf\include;..\..\..\source\opendmc\wnds\include</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalIncludeDirectories>..\..\..\source\opendmc\conf\include;..\..\..\source\opendmc\wnds\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>..\..\..\library</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\source\opendmc\wnds\button.cc" />
-    <ClCompile Include="..\..\..\source\opendmc\wnds\combo.cc" />
-    <ClCompile Include="..\..\..\source\opendmc\wnds\dialog.cc" />
-    <ClCompile Include="..\..\..\source\opendmc\wnds\editbox.cc" />
-    <ClCompile Include="..\..\..\source\opendmc\wnds\winapp.cc" />
-    <ClCompile Include="..\..\..\source\opendmc\wnds\frame.cc" />
-    <ClCompile Include="..\..\..\source\opendmc\wnds\imagelist.cc" />
-    <ClCompile Include="..\..\..\source\opendmc\wnds\listbox.cc" />
-    <ClCompile Include="..\..\..\source\opendmc\wnds\listview.cc" />
-    <ClCompile Include="..\..\..\source\opendmc\wnds\object.cc" />
-    <ClCompile Include="..\..\..\source\opendmc\wnds\progress.cc" />
-    <ClCompile Include="..\..\..\source\opendmc\wnds\richedit.cc" />
-    <ClCompile Include="..\..\..\source\opendmc\wnds\tabview.cc" />
-    <ClCompile Include="..\..\..\source\opendmc\wnds\treeview.cc" />
-    <ClCompile Include="..\..\..\source\opendmc\wnds\wnds.cc" />
+    <ClCompile Include="..\..\..\source\sample\sample_window\smw_apps.cc" />
+    <ClCompile Include="..\..\..\source\sample\sample_window\smw_frame.cc" />
+    <ClCompile Include="..\..\..\source\sample\sample_window\smw_main.cc" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\source\opendmc\wnds\include\opendmc\opendmc_wnds.hh" />
-    <ClInclude Include="..\..\..\source\opendmc\wnds\include\opendmc\wnds\button.hh" />
-    <ClInclude Include="..\..\..\source\opendmc\wnds\include\opendmc\wnds\combo.hh" />
-    <ClInclude Include="..\..\..\source\opendmc\wnds\include\opendmc\wnds\dialog.hh" />
-    <ClInclude Include="..\..\..\source\opendmc\wnds\include\opendmc\wnds\editbox.hh" />
-    <ClInclude Include="..\..\..\source\opendmc\wnds\include\opendmc\wnds\winapp.hh" />
-    <ClInclude Include="..\..\..\source\opendmc\wnds\include\opendmc\wnds\frame.hh" />
-    <ClInclude Include="..\..\..\source\opendmc\wnds\include\opendmc\wnds\imagelist.hh" />
-    <ClInclude Include="..\..\..\source\opendmc\wnds\include\opendmc\wnds\listbox.hh" />
-    <ClInclude Include="..\..\..\source\opendmc\wnds\include\opendmc\wnds\listview.hh" />
-    <ClInclude Include="..\..\..\source\opendmc\wnds\include\opendmc\wnds\object.hh" />
-    <ClInclude Include="..\..\..\source\opendmc\wnds\include\opendmc\wnds\progress.hh" />
-    <ClInclude Include="..\..\..\source\opendmc\wnds\include\opendmc\wnds\richedit.hh" />
-    <ClInclude Include="..\..\..\source\opendmc\wnds\include\opendmc\wnds\struct.hh" />
-    <ClInclude Include="..\..\..\source\opendmc\wnds\include\opendmc\wnds\tabview.hh" />
-    <ClInclude Include="..\..\..\source\opendmc\wnds\include\opendmc\wnds\treeview.hh" />
-    <ClInclude Include="..\..\..\source\opendmc\wnds\include\opendmc\wnds\wnds.hh" />
+    <ClInclude Include="..\..\..\source\sample\sample_window\smw_apps.hh" />
+    <ClInclude Include="..\..\..\source\sample\sample_window\smw_define.hh" />
+    <ClInclude Include="..\..\..\source\sample\sample_window\smw_frame.hh" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

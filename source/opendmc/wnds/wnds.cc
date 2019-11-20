@@ -112,8 +112,8 @@ BOOL DmWnds::Create(const TCHAR* szPtr, int x, int y, int wd, int ht, HWND hWndP
 		::memset((void*)&smFrame, 0, sizeof(WNDSFRAME));
 		smFrame.hInstance = hInstance;
 		smFrame.hWndParent = hWndParent;
-		smFrame.szClassPtr = const_cast<TCHAR*>(TEXT(WNDS_DEFAULT_CLASSNAME));
-		smFrame.szCaptionPtr = const_cast<TCHAR*>(szPtr);
+		smFrame.pszClass = TEXT(WNDS_DEFAULT_CLASSNAME);
+		smFrame.pszCaption = szPtr;
 		smFrame.nPosx = x;
 		smFrame.nPosy = y;
 		smFrame.nWidth = wd;
@@ -214,8 +214,8 @@ BOOL DmWnds::CreateEx(DWORD dwExStyle, const TCHAR* szClassPtr, const TCHAR* szC
 		::memset((void*)&smFrame, 0, sizeof(WNDSFRAME));
 		smFrame.hInstance = hInstance;
 		smFrame.hWndParent = hWndParent;
-		smFrame.szClassPtr = const_cast<TCHAR*>(szClassPtr);
-		smFrame.szCaptionPtr = const_cast<TCHAR*>(szCaptionPtr);
+		smFrame.pszClass = szClassPtr;
+		smFrame.pszCaption = szCaptionPtr;
 		smFrame.nPosx = x;
 		smFrame.nPosy = y;
 		smFrame.nWidth = wd;
@@ -251,6 +251,7 @@ BOOL DmWnds::CreateEx(DWORD dwExStyle, const TCHAR* szClassPtr, const TCHAR* szC
  *	@brief 建立一個樣本視窗框架
  *	@return	<b>型別: BOOL</b> 若視窗建立成功返回值為非零值，若視窗建立失敗責返回值為零。
  */
+#if 0
 BOOL DmWnds::CreateSample()
 {
 	const TCHAR* szClassPtr = this->GetControlsClassName();
@@ -287,6 +288,7 @@ BOOL DmWnds::CreateSample()
 	}
 	return FALSE;
 }
+#endif
 
 /**
  *	@brief	取得控制項種類
@@ -2782,6 +2784,24 @@ HWND DmWnds::WindowFromPoint(POINT stPoint) const { return ::WindowFromPoint(stP
 ///////////////////////////////////////////////////////////////////////////////
 
 /**
+ *	@brief	視窗或控制像訊息處理函數 (轉發給原訊息處理函數)
+ *	@param[in] uMessage	訊息碼
+ *	@param[in] wParam	訊息參數
+ *	@param[in] lParam	訊息參數
+ *	@return <b>型別: LRESULT</b> \n 返回值為訊息處理結果
+ */
+LRESULT DmWnds::PassToNextWndProc(UINT uMessage, WPARAM wParam, LPARAM lParam)
+{
+	// 呼叫原視窗處理函數
+	auto fnCallback = reinterpret_cast<WNDPROC>(this->GetSafePrevCallback());
+	if (fnCallback != NULL) {
+		return ::CallWindowProc(fnCallback, *this, uMessage, wParam, lParam);
+	}
+	// 使用系統預設處理函數
+	return ::DefWindowProc(*this, uMessage, wParam, lParam);
+}
+
+/**
  *	@brief 視窗或控制項訊息處理函數 (預設處理函數)
  *	@param[in] uMessage	訊息碼
  *	@param[in] wParam	訊息參數
@@ -2790,12 +2810,14 @@ HWND DmWnds::WindowFromPoint(POINT stPoint) const { return ::WindowFromPoint(stP
  */
 LRESULT DmWnds::DefaultWndProc(UINT uMessage, WPARAM wParam, LPARAM lParam)
 {
-	LRESULT lResult = 0;
+	auto lResult = static_cast< LRESULT>(0);	// 多此一舉? 直接用 LRESULT 定義不就好? 嘿嘿~ 我爽~ 就是想用用 auto 語法
 
 	switch (uMessage)
 	{
+	/** !!! 注意 WM_NCCREATE, WM_NCDESTROY 還是必須交回原系統處理 */
 	case WM_NCCREATE:
-		lResult = this->WmNcCreate(wParam, lParam);
+		this->WmNcCreate(wParam, lParam);
+		return this->PassToNextWndProc(WM_NCCREATE, wParam, lParam);
 		break;
 	case WM_CREATE:
 		lResult = this->WmCreate(wParam, lParam);
@@ -2805,6 +2827,7 @@ LRESULT DmWnds::DefaultWndProc(UINT uMessage, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_NCDESTROY:
 		this->WmNcDestroy(wParam, lParam);
+		return this->PassToNextWndProc(WM_NCDESTROY, wParam, lParam);
 		break;
 	case WM_CLOSE:
 		this->WmClose(wParam, lParam);
@@ -2813,14 +2836,9 @@ LRESULT DmWnds::DefaultWndProc(UINT uMessage, WPARAM wParam, LPARAM lParam)
 		this->WmUserCreate(wParam, lParam);
 		break;
 	default:
-		// 呼叫原視窗處理函數
-		auto fnCallback = reinterpret_cast<WNDPROC>(this->GetSafePrevCallback());
-		if (fnCallback != NULL) {
-			return ::CallWindowProc(fnCallback, *this, uMessage, wParam, lParam);
-		}
-		// 使用系統預設處理函數
-		return ::DefWindowProc(*this, uMessage, wParam, lParam);
+		return this->PassToNextWndProc(uMessage, wParam, lParam);
 	}
+
 	return lResult;
 }
 
@@ -3085,7 +3103,7 @@ BOOL DmWnds::SafeRegisterClass(const WNDSFRAME* smPtr)
 				break;
 		}
 		// 無效的視窗 Class 名稱
-		if (smPtr->szClassPtr == NULL) {
+		if (smPtr->pszClass == NULL) {
 			// error handling
 			break;
 		}
@@ -3123,7 +3141,7 @@ BOOL DmWnds::SafeRegisterClass(const WNDSFRAME* smPtr)
 		wcex.hCursor = hCusr;						// handle of cursor
 		wcex.hbrBackground = hBrsh;					// handle of background
 		wcex.lpszMenuName = NULL;					// pointer of menu name (string)
-		wcex.lpszClassName = smPtr->szClassPtr;		// pointer of class name (string)
+		wcex.lpszClassName = smPtr->pszClass;		// pointer of class name (string)
 		wcex.hIconSm = smPtr->hIconSm;				// pointer of icon for small icon using
 		bResult = ::RegisterClassEx(&wcex) != 0;	// 返回 ATOM 值，若成功返回非零值，註冊視窗唯一識別碼，若失敗將返回值為零。
 		break;
@@ -3163,7 +3181,7 @@ HWND DmWnds::SafeCreateWindows(const WNDSFRAME* smPtr)
 			}
 		}
 		// 無效的視窗 Class 名稱
-		if (smPtr->szClassPtr == NULL) {
+		if (smPtr->pszClass == NULL) {
 			// error handling
 			break;
 		}
@@ -3176,8 +3194,8 @@ HWND DmWnds::SafeCreateWindows(const WNDSFRAME* smPtr)
 		// 建立視窗，呼叫 Win32 API - CreatewindowEx
 		hWnd = ::CreateWindowEx(
 			smPtr->dwExStyle,		// window extern style
-			smPtr->szClassPtr,		// window class name
-			smPtr->szCaptionPtr,	// window name
+			smPtr->pszClass,		// window class name
+			smPtr->pszCaption,		// window name
 			smPtr->dwStyle,			// window style, "WS_OVERLAPPED | WS_SYSMENU | WS_MINIMIZEBOX"
 			smPtr->nPosx,			// window left-top position, coordinate x
 			smPtr->nPosy,			// window left-top position, coordinate y
