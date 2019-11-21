@@ -20,12 +20,29 @@ public:
 	virtual ~DmSurface();
 	virtual void Release();
 
-	int ScanlineMatch(int nWidth, int nHeight, int nBitCount);
+	BOOL CreateSurface(int wd, int ht, int bitCount);
+	BOOL Blt(DmSurface& surDest, int px, int py, int x, int y, int wd, int ht);
 
+	#if defined(ODMC_WINDOWS)
+	void TransferToWindow(HWND hWnd);
+	#endif
 
+	int GetWidth()		{ return m_nWidth; }
+	int GetHeight()		{ return m_nHeight; }
+	int GetScanline()	{ return m_nScanline; }
+	int GetBitCount()	{ return m_nBitCount; }
+	UINT8* GetImageData() { return m_bitPtr; }
+	UINT32 GetImageSize() { return m_uImageSize; }
 
 protected:
-	UINT8*	m_BitPtr;			//!< 圖像資料存放位置
+	BOOL ConvertDrawArea(DmSurface& surDest, IMGDRAWAREA* drawPtr, int px, int py, int x, int y, int wd, int ht);
+
+	int	 ScanlineLength(int wd, int ht, int bitCount);
+	BOOL SetBmpFileHeader();
+	BOOL SetBmpInfoHeader();
+
+protected:
+	UINT8*	m_bitPtr;			//!< 圖像資料存放位置
 	int		m_nWidth;			//!< Surface 寬度
 	int		m_nHeight;			//!< Surface 高度
 	int		m_nBitCount;		//!< Surface 色彩深度

@@ -67,15 +67,13 @@ typedef RGB32* LPREG32;
  *	@brief	列舉色彩深度, 單位 bit
  */
 enum class EmColorDepth {
-	BmppMin	= 1,
 	Bmpp1	= 1,
-	Bmpp2	= 2,
-	Bmpp3	= 4,
+	Bmpp4	= 4,
 	Bmpp8	= 8,
-	Bmpp16	= 16,
+	Bmpp15	= 15,	// RGB555
+	Bmpp16	= 16,	// RGB565
 	Bmpp24	= 24,
 	Bmpp32	= 32,
-	BmppMax	= 32
 };
 
 /* 強制編譯氣採用對其方式 Bitmap 結構若被自動使用預設對齊將造成資料位置不正確 如 Visual Studio 2010 資料預設對齊為 4-byte */
@@ -83,6 +81,35 @@ enum class EmColorDepth {
 #	include <pshpack2.h>
 #else
 #	pragma pack(2)
+#endif
+
+/* 壓縮方法 (biCompression) */
+#ifndef BI_RGB
+#define BI_RGB				0	//!< 無壓縮
+#endif
+
+#ifndef BI_RLE8
+#define BI_RLE8				1	//!< RLE 8位元
+#endif
+
+#ifndef BI_RLE4
+#define	BI_RLE4				2	//!< RLE 4位元
+#endif
+
+#ifndef BI_BITFIELDS
+#define BI_BITFIELDS		3	//!< 位欄位或者霍夫曼1D壓縮（BITMAPCOREHEADER2）	像素格式由位遮罩指定，或點陣圖經過霍夫曼1D壓縮（BITMAPCOREHEADER2）
+#endif
+
+#ifndef BI_JPEG
+#define	BI_JPEG				4	//!< JPEG或RLE - 24壓縮（BITMAPCOREHEADER2）	點陣圖包含JPEG圖像或經過RLE - 24壓縮（BITMAPCOREHEADER2）
+#endif
+
+#ifndef BI_PNG
+#define BI_PNG				5	//!< PNG									點陣圖包含PNG圖像
+#endif
+
+#ifndef BI_ALPHABITFIELDS
+#define BI_ALPHABITFIELDS	6	//!< 位欄位									針對Windows CE.NET 4.0及之後版本
 #endif
 
 /**
@@ -109,6 +136,7 @@ typedef BMPFILEHEADER* LPBMPFILEHEADER;
  *		- BI_BITFIELDS	指定不壓縮位圖，並且顏色表由三個DWORD色罩組成，分別指定每個像素的紅色，綠色和藍色分量。與16和32 bpp位圖一起使用時有效。
  *		- BI_JPEG		表示該圖像是JPEG圖像。
  *		- BI_PNG		表示該圖像是PNG圖像。
+ *		- BI_ALPHABITFIELDS	表示 Alpha 通道
  *	@see	https://docs.microsoft.com/en-us/windows/win32/api/wingdi/ns-wingdi-bitmapinfoheader
  */
 struct BMPINFOHEADER {
@@ -143,7 +171,7 @@ struct BMPRGBQUAD {
  */
 struct BMPINFO {
 	BITMAPINFOHEADER	bmiHeader;
-	BMPRGBQUAD			bmiColors[1];
+	BMPRGBQUAD			bmiColors[256];
 };
 typedef BMPINFO* LPBMPINFO;
 
@@ -154,22 +182,31 @@ typedef BMPINFO* LPBMPINFO;
 #pragma pack()
 #endif
 
-
 /**
- *	@struct	IMGCLIPINFO
- *	@brief	圖像剪裁資訊, 單位 Pixel
+ *	@struct IMGDRAWAREA
+ *	@brief	Compile Draw info structure
  */
-struct IMGCLIPINFO {
-	int iDstPosx;		//!< 目標畫板起始點 x 座標
-	int iDstPosy;		//!< 目標畫板起始點 y 座標
-	int iDstWidth;		//!< 目標提供可繪製區域寬度
-	int iDstHeight;		//!< 目標提供可繪製區域高度
-	int iSrcPosx;		//!< 來源畫板起始點 x 座標
-	int iSrcPosy;		//!< 來源畫板起始點 y 座標 
-	int iSrcWidth;		//!< 來源畫板要剪裁的寬度
-	int iSrcHeight;		//!< 來源畫板要剪裁的高度
+struct IMGDRAWAREA
+{
+	DWORD	dwWidth;	//!< 寬度
+	DWORD   dwHeight;	//!< 高度
+	DWORD   dwDepth;	//!< 色彩深度
+	DWORD   dwDestAddr;	//!< 目標圖像資料存放位址
+	DWORD   cbDestLine;	//!< 目標圖像 scan-line 長度
+	DWORD   dwSrcAddr;	//!< 來源圖像資料存放位址
+	DWORD   cbSrcLine;	//!< 來源圖像 scan-line 長度
 };
 
-
+struct IMGCLIPAREA
+{
+	int DestX;			//!< 目標起始座標 X
+	int DestY;			//!< 目標起始座標 Y
+	int DestWidth;		//!< 目標寬度
+	int DestHeight;		//!< 目標高度
+	int SrceX;			//!< 來源起始座標 X
+	int SrceY;			//!< 來源起始座標 Y
+	int SrceWidth;		//!< 來源寬度
+	int SrceHeight;		//!< 來源高度
+};
 
 #endif // !ODMC_IMAGE_IMDEFINE_HH
