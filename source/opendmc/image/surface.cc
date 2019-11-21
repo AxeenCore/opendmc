@@ -16,7 +16,7 @@ DmSurface::DmSurface()
 	, m_nHeight(0)
 	, m_nBitCount(0)
 	, m_nScanline(0)
-	, m_uImageSize(0) {
+	, m_uSize(0) {
 	::memset(reinterpret_cast<void*>(&m_bmFile), 0, sizeof(m_bmFile));
 	::memset(reinterpret_cast<void*>(&m_bmInfo), 0, sizeof(m_bmInfo));
 }
@@ -37,7 +37,7 @@ void DmSurface::Release()
 	m_nHeight = 0;
 	m_nBitCount = 0;
 	m_nScanline = 0;
-	m_uImageSize = 0;
+	m_uSize = 0;
 	::memset(reinterpret_cast<void*>(&m_bmFile), 0, sizeof(m_bmFile));
 	::memset(reinterpret_cast<void*>(&m_bmInfo), 0, sizeof(m_bmInfo));
 }
@@ -76,7 +76,7 @@ BOOL DmSurface::CreateSurface(int wd, int ht, int bitCount)
 		m_nWidth = wd;
 		m_nHeight = ht;
 		m_nScanline = scanline;
-		m_uImageSize = cbSize;
+		m_uSize = cbSize;
 
 		/* 設定 BMP 圖形資訊 */
 		if (!this->SetBmpInfoHeader()) break;
@@ -95,9 +95,9 @@ void DmSurface::TransferToWindow(HWND hWnd)
 	const void* bitPtr = reinterpret_cast<const void*>(m_bitPtr);
 	BITMAPINFO* infoPtr = reinterpret_cast<BITMAPINFO*>(&m_bmInfo);
 
-	HDC         hDC = nullptr;
-	DWORD       dwWidth;
-	DWORD       dwHeight;
+	HDC hDC = nullptr;
+	auto wd = static_cast<DWORD>(m_nWidth);
+	auto ht = static_cast<DWORD>(m_nHeight);
 
 	for (;;) {
 		if (hWnd == nullptr || bitPtr == nullptr || infoPtr == nullptr) break;
@@ -105,24 +105,25 @@ void DmSurface::TransferToWindow(HWND hWnd)
 		/* Get target window DC (device context) */
 		if ((hDC = ::GetDC(hWnd)) == nullptr) break;
 
-		dwWidth = static_cast<DWORD>(m_nWidth);
-		dwHeight = static_cast<DWORD>(m_nHeight);
+		wd = static_cast<DWORD>(m_nWidth);
+		ht = static_cast<DWORD>(m_nHeight);
 
 		/* draw image to target device contex */
 		::SetDIBitsToDevice(
 			hDC,				// handle of device context
 			0,					// destination start x-coordinate
 			0,					// destination start y-coordinate
-			dwWidth,			// width
-			dwHeight,			// height
+			wd,					// width
+			ht,					// height
 			0,					// source strat x-coordinate
 			0,					// source start y-coordinate
 			0,					// start scan-line
-			static_cast<UINT>(dwHeight),	// lines
+			static_cast<UINT>(ht),	// lines
 			bitPtr,				// bit data
 			infoPtr,			// BITMAPINFO structure
 			DIB_RGB_COLORS);	// Color use 
-	} while (0);
+		break;
+	};
 
 	if (hDC) ::ReleaseDC(hWnd, hDC);
 }
@@ -139,7 +140,7 @@ void DmSurface::TransferToWindow(HWND hWnd)
  */
 int DmSurface::ScanlineLength(int wd, int ht, int bitCount)
 {
-	auto emBpp = static_cast<EmColorDepth>(bitCount);
+	auto bpp = static_cast<PixelFormat>(bitCount);
 	auto scanline = static_cast<int>(0);
 
 	for (;;) {
@@ -149,33 +150,33 @@ int DmSurface::ScanlineLength(int wd, int ht, int bitCount)
 		if (ht < DMIMG_MINSIZE || ht > DMIMG_MAXSIZE)
 			break;
 
-		switch (emBpp)
+		switch (bpp)
 		{
-		case EmColorDepth::Bmpp1:
+		case PixelFormat::RGB_1bpp:
 			// 1 byte = 8 pixel, ==>> (width + 7) / 8;
 			scanline = (wd + 7) >> 3;
 			break;
 
-		case EmColorDepth::Bmpp4:
+		case PixelFormat::RGB_4bpp:
 			// 1 byte = 2 pixel, ==>> (width + 1) / 2;
 			scanline = (wd + 1) >> 1;
 			break;
 
-		case EmColorDepth::Bmpp15:
-		case EmColorDepth::Bmpp16:
+		case PixelFormat::RGB_15bpp:
+		case PixelFormat::RGB_16bpp:
 			// There are 2 16-bit color mode, (2bytes = 1 pixel)
 			//  (1) 555, RGB R5, G5, B5 --> 0RRRRRGGGGGBBBBB (the highest bit not uses)
 			//  (2) 565, RGB R5, G6, B5 --> RRRRRGGGGGGBBBBB (the green close uses 6-bits)
 			// // ==>> width * (width / 8)
-			if (emBpp == EmColorDepth::Bmpp15) {
-				bitCount = static_cast<int>(EmColorDepth::Bmpp16);
+			if (bpp == PixelFormat::RGB_15bpp) {
+				bitCount = static_cast<int>(PixelFormat::RGB_16bpp);
 			}
 			scanline = wd * (bitCount >> 3);
 			break;
 
-		case EmColorDepth::Bmpp8:
-		case EmColorDepth::Bmpp24:
-		case EmColorDepth::Bmpp32:
+		case PixelFormat::RGB_8bpp:
+		case PixelFormat::RGB_24bpp:
+		case PixelFormat::RGB_32bpp:
 			// 8-bits, 24-bits, 32-bits, uses same solution to get scan-line
 			// ==>> width * (width / 8)
 			scanline = wd * (bitCount >> 3);
@@ -221,10 +222,10 @@ BOOL DmSurface::SetBmpInfoHeader()
 		::memset(&m_bmInfo, 0, sizeof(m_bmInfo));
 		m_bmInfo.bmiHeader.biSize = sizeof(BMPINFOHEADER);
 		m_bmInfo.bmiHeader.biWidth = m_nWidth;
-		m_bmInfo.bmiHeader.biHeight = m_nHeight;
-		m_bmInfo.bmiHeader.biPlanes = 1; // must be 1
-		m_bmInfo.bmiHeader.biBitCount = m_nBitCount == static_cast<int>(EmColorDepth::Bmpp15)
-			? static_cast<WORD>(EmColorDepth::Bmpp16)
+		m_bmInfo.bmiHeader.biHeight = -(m_nHeight);	// 標準 BMP 起始座標為左下，若正像圖於 Windows DIB 顯示時將會被反向, 所以要正向顯示必須為高必須為負值。
+		m_bmInfo.bmiHeader.biPlanes = 1;			// must be 1
+		m_bmInfo.bmiHeader.biBitCount = m_nBitCount == static_cast<int>(PixelFormat::RGB_15bpp)
+			? static_cast<WORD>(PixelFormat::RGB_16bpp)
 			: static_cast<WORD>(m_nBitCount);
 		m_bmInfo.bmiHeader.biCompression = BI_RGB;
 		m_bmInfo.bmiHeader.biSizeImage = 0;
@@ -234,22 +235,25 @@ BOOL DmSurface::SetBmpInfoHeader()
 		m_bmInfo.bmiHeader.biClrImportant = 0;
 
 		/* 調色盤定義 */
-		auto Bmpp = static_cast<EmColorDepth>(m_nBitCount);
+		auto Bmpp = static_cast<PixelFormat>(m_nBitCount);
 		UINT32* pQuad = reinterpret_cast<UINT32*>(&m_bmInfo.bmiColors[0]);
 
 		res = TRUE;
 		switch (Bmpp)
 		{
-		case EmColorDepth::Bmpp1:
+		case PixelFormat::RGB_1bpp:
+			// TBD
 			break;
 
-		case EmColorDepth::Bmpp4:
+		case PixelFormat::RGB_4bpp:
+			// TBD
 			break;
 
-		case EmColorDepth::Bmpp8:
+		case PixelFormat::RGB_8bpp:
+			// TBD
 			break;
 
-		case EmColorDepth::Bmpp16:
+		case PixelFormat::RGB_16bpp:
 			m_bmInfo.bmiHeader.biCompression = BI_BITFIELDS;
 			m_bmInfo.bmiHeader.biClrUsed = 3;
 			m_bmInfo.bmiHeader.biClrImportant = 0;
@@ -259,15 +263,15 @@ BOOL DmSurface::SetBmpInfoHeader()
 			*(pQuad + 2) = RGB_565_MASK_BLUE;
 			break;
 
-		case EmColorDepth::Bmpp15:
-		case EmColorDepth::Bmpp24:
+		case PixelFormat::RGB_15bpp:
+		case PixelFormat::RGB_24bpp:
 			m_bmInfo.bmiHeader.biCompression = BI_RGB;
 			m_bmInfo.bmiHeader.biClrUsed = 0;
 			m_bmInfo.bmiHeader.biClrImportant = 0;
 			m_bmInfo.bmiHeader.biSizeImage = 0;
 			break;
 
-		case EmColorDepth::Bmpp32:
+		case PixelFormat::RGB_32bpp:
 			m_bmInfo.bmiHeader.biCompression = BI_BITFIELDS;
 			m_bmInfo.bmiHeader.biClrUsed = 3;
 			m_bmInfo.bmiHeader.biClrImportant = 0;

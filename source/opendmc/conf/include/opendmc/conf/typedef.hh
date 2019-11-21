@@ -32,6 +32,7 @@
 #	include <fstream>
 #	include <string>
 #	include <sstream>
+#	include	<thread>
 #	include <vector>
 #	include <map>
 #endif

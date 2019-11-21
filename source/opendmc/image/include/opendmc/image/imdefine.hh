@@ -28,6 +28,12 @@
 #define RGB_888_MASK_GREEN  0x0000FF00	//!< RGB 888 G channel
 #define RGB_888_MASK_BLUE   0x000000FF	//!< RGB 888 B channel
 
+/* Color mask 888 */
+#define ARGB_888_MASK_RED	0x00FF0000	//!< ARGB 888 R
+#define ARGB_888_MASK_GREEN	0x0000FF00	//!< ARGB 888 G
+#define ARGB_888_MASK_BLUE	0x000000FF	//!< ARBG 888 B
+#define ARGB_888_MASK_ALPHA	0xFF000000	//!< ARGB 888 A
+
 // Convert 16-bits (565) color to 24-bits RGB color
 #define RGB16TORGB24(x)     ( ((( x ) << 8) & 0x00F80000) | ((( x ) << 5) & 0x0000FC00) | ((( x ) << 3) & 0x000000F8) )
 
@@ -63,17 +69,17 @@ struct RGB32 {
 typedef RGB32* LPREG32;
 
 /**
- *	@enum	EmColorDeep
+ *	@enum	PixelFormat
  *	@brief	列舉色彩深度, 單位 bit
  */
-enum class EmColorDepth {
-	Bmpp1	= 1,
-	Bmpp4	= 4,
-	Bmpp8	= 8,
-	Bmpp15	= 15,	// RGB555
-	Bmpp16	= 16,	// RGB565
-	Bmpp24	= 24,
-	Bmpp32	= 32,
+enum class PixelFormat {
+	RGB_1bpp	= 1,	//!< 2 colors
+	RGB_4bpp	= 4,	//!< 16 colors
+	RGB_8bpp	= 8,	//!< 256 colors
+	RGB_15bpp	= 15,	//!< RGB_555
+	RGB_16bpp	= 16,	//!< RGB 565
+	RGB_24bpp	= 24,	//!< RGB_888
+	RGB_32bpp	= 32,	//!< RGB_888 or ARGB_888
 };
 
 /* 強制編譯氣採用對其方式 Bitmap 結構若被自動使用預設對齊將造成資料位置不正確 如 Visual Studio 2010 資料預設對齊為 4-byte */
@@ -181,32 +187,5 @@ typedef BMPINFO* LPBMPINFO;
 #else
 #pragma pack()
 #endif
-
-/**
- *	@struct IMGDRAWAREA
- *	@brief	Compile Draw info structure
- */
-struct IMGDRAWAREA
-{
-	DWORD	dwWidth;	//!< 寬度
-	DWORD   dwHeight;	//!< 高度
-	DWORD   dwDepth;	//!< 色彩深度
-	DWORD   dwDestAddr;	//!< 目標圖像資料存放位址
-	DWORD   cbDestLine;	//!< 目標圖像 scan-line 長度
-	DWORD   dwSrcAddr;	//!< 來源圖像資料存放位址
-	DWORD   cbSrcLine;	//!< 來源圖像 scan-line 長度
-};
-
-struct IMGCLIPAREA
-{
-	int DestX;			//!< 目標起始座標 X
-	int DestY;			//!< 目標起始座標 Y
-	int DestWidth;		//!< 目標寬度
-	int DestHeight;		//!< 目標高度
-	int SrceX;			//!< 來源起始座標 X
-	int SrceY;			//!< 來源起始座標 Y
-	int SrceWidth;		//!< 來源寬度
-	int SrceHeight;		//!< 來源高度
-};
 
 #endif // !ODMC_IMAGE_IMDEFINE_HH

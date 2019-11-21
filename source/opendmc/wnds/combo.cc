@@ -36,11 +36,10 @@ BOOL DmCombo::Create(const TCHAR* szCaptionPtr, int x, int y, int wd, int ht, HW
 	const DWORD dwExStyle = 0;
 	WNDSCTRLS smCtrl;
 
-	if (szCaptionPtr != NULL) szCaptionPtr = NULL;
 	::memset(&smCtrl, 0, sizeof(smCtrl));
 	smCtrl.hInstance	= ::GetWinapp().GetInstanceHandle();
 	smCtrl.hParent		= hWndParent;
-	smCtrl.pszCaption	= szCaptionPtr;
+	smCtrl.pszCaption	= nullptr;	// Combo Box 沒有標題文字
 	smCtrl.dwStyle		= dwStyle;
 	smCtrl.dwExStyle	= dwExStyle;
 	smCtrl.nPosx		= x;
@@ -244,7 +243,7 @@ int DmCombo::GetDroppedWidth() const
  */
 HWND DmCombo::GetEditboxCtrl() const
 {
-	HWND hEdit = NULL;
+	HWND hEdit = nullptr;
 	COMBOBOXINFO cbi;
 	::memset(&cbi, 0, sizeof(COMBOBOXINFO));
 	cbi.cbSize = sizeof(COMBOBOXINFO);
@@ -367,7 +366,7 @@ int DmCombo::GetItemTextLength(int nItem) const
  */
 HWND DmCombo::GetListboxCtrl() const
 {
-	HWND hList = NULL;
+	HWND hList = nullptr;
 	COMBOBOXINFO cbi;
 	::memset(&cbi, 0, sizeof(COMBOBOXINFO));
 	cbi.cbSize = sizeof(COMBOBOXINFO);

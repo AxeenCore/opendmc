@@ -30,11 +30,11 @@
 /**
  *	物件、記憶體釋放
  */
-#define SAFE_FREE(p)            { if (NULL!=(p))  { ::free((void*)(p); (p)=NULL; } }
-#define SAFE_DELETE(p)          { if (NULL!=(p))  { delete (p); (p)=NULL; } }
-#define SAFE_DELETEARRAY(p)		{ if (NULL!=(p))  { delete [] (p); (p)=NULL; } }
-#define SAFE_CLOSE_FILE(p)      { if (NULL!=(p))  { ::fclose(p); (p)=NULL; } }
-#define SAFE_CLOSE_HANDLE(p)    { if (NULL!=(p) && INVALID_HANDLE_VALUE!=(p))  { ::CloseHandle(p); (p)=NULL; } }
+#define SAFE_FREE(p)            { if (nullptr!=(p))  { ::free((void*)(p); (p)=nullptr; } }
+#define SAFE_DELETE(p)          { if (nullptr!=(p))  { delete (p); (p)=nullptr; } }
+#define SAFE_DELETEARRAY(p)		{ if (nullptr!=(p))  { delete [] (p); (p)=nullptr; } }
+#define SAFE_CLOSE_FILE(p)      { if (nullptr!=(p))  { ::fclose(p); (p)=nullptr; } }
+#define SAFE_CLOSE_HANDLE(p)    { if (nullptr!=(p) && INVALID_HANDLE_VALUE!=(p))  { ::CloseHandle(p); (p)=nullptr; } }
 
 /**
  *	除錯相關聚集定義，Debug message macro

@@ -39,7 +39,7 @@ BOOL DmButton::Create(const TCHAR* szCaptionPtr, int x, int y, int wd, int ht, H
 	::memset(&smCtrl, 0, sizeof(WNDSCTRLS));
 	smCtrl.hInstance	= ::GetWinapp().GetInstanceHandle();
 	smCtrl.hParent		= hWndParent;
-	smCtrl.pszClass		= NULL;
+	smCtrl.pszClass		= nullptr;
 	smCtrl.pszCaption	= szCaptionPtr;
 	smCtrl.dwStyle		= dwStyle;
 	smCtrl.dwExStyle	= dwExStyle;
@@ -405,7 +405,7 @@ LRESULT DmButton::SetImage(int nType, void* vPtr) const
 {
 	assert(this->IsWindow());
 	if (nType != IMAGE_BITMAP && nType != IMAGE_ICON) {
-		return NULL;
+		return 0L;
 	}
 
 	// BM_SETIMAGE

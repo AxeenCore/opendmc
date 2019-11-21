@@ -98,12 +98,12 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>..\..\..\source\opendmc\conf\include;..\..\..\source\opendmc\wnds\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\source\opendmc\conf\include;..\..\..\source\opendmc\wnds\include;..\..\..\..\\3rdparty\opencv-4.1.2\build\install\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\..\..\library</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\library;..\..\..\..\3rdparty\opencv-4.1.2\build\install\x64\vc16\lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -116,14 +116,14 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>..\..\..\source\opendmc\conf\include;..\..\..\source\opendmc\wnds\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\source\opendmc\conf\include;..\..\..\source\opendmc\wnds\include;..\..\..\..\\3rdparty\opencv-4.1.2\build\install\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\..\..\library</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\library;..\..\..\..\3rdparty\opencv-4.1.2\build\install\x64\vc16\lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -134,12 +134,12 @@
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>..\..\..\source\opendmc\conf\include;..\..\..\source\opendmc\wnds\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\source\opendmc\conf\include;..\..\..\source\opendmc\wnds\include;..\..\..\..\\3rdparty\opencv-4.1.2\build\install\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\..\..\library</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\library;..\..\..\..\3rdparty\opencv-4.1.2\build\install\x64\vc16\lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -152,14 +152,14 @@
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>..\..\..\source\opendmc\conf\include;..\..\..\source\opendmc\wnds\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\source\opendmc\conf\include;..\..\..\source\opendmc\wnds\include;..\..\..\..\\3rdparty\opencv-4.1.2\build\install\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\..\..\library</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\library;..\..\..\..\3rdparty\opencv-4.1.2\build\install\x64\vc16\lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
