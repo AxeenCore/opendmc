@@ -89,7 +89,7 @@ public:
 	HWND	GetDesktopWindow() const;
 	int		GetDlgCtrlID() const;
 	HWND	GetDlgItem(int nIDDlgItem) const;
-	UINT	GetDlgItemInt(int nIDDlgItem, BOOL *bTranslatedPtr, BOOL bSigned) const;
+	UINT	GetDlgItemInt(int nIDDlgItem, BOOL* bTranslatedPtr, BOOL bSigned) const;
 	UINT	GetDlgItemInt(int nIDDlgItem, BOOL bSigned) const;
 	UINT	GetDlgItemText(int nIDDlgItem, TCHAR* szStringPtr, int cchMax) const;
 	DWORD	GetExStyle() const;
@@ -116,7 +116,7 @@ public:
 	HDC		GetWindowDC() const;
 	LONG_PTR GetWindowLongPtr(int nIndex) const;
 	BOOL	GetWindowInfo(WINDOWINFO* wiPtr) const;
-	BOOL	GetWindowPlacement(WINDOWPLACEMENT *wpmPtr) const;
+	BOOL	GetWindowPlacement(WINDOWPLACEMENT* wpmPtr) const;
 	BOOL	GetWindowRect(RECT* rcPtr) const;
 	int		GetWindowRgn(HRGN hRgn) const;
 	int		GetWindowText(TCHAR* textPtr, int nMaxCount) const;
@@ -146,7 +146,7 @@ public:
 	void	MapWindowPoints(HWND hWndTo, POINT* ptPtr, UINT uPoints) const;
 	void	MapWindowPoints(HWND hWndTo, POINT* ptPtr) const;
 	void	MapWindowPoints(HWND hWndTo, RECT* rcPtr) const;
-	int		MessageBox(const TCHAR* textPtr, const TCHAR*	szCaptionPtr = NULL, UINT uType = MB_OK) const;
+	int		MessageBox(const TCHAR* textPtr, const TCHAR* szCaptionPtr = NULL, UINT uType = MB_OK) const;
 	BOOL	ModifyStyle(DWORD dwRemove, DWORD dwAdd, UINT uFlags = 0) const;
 	BOOL	ModifyStyleEx(DWORD dwRemove, DWORD dwAdd, UINT uFlags = 0) const;
 	BOOL	MoveWindow(int x, int y, int nWidth, int nHeight, BOOL bRepaint = TRUE) const;
@@ -163,7 +163,7 @@ public:
 	BOOL	ScreenToClient(POINT* pointPtr) const;
 	BOOL	ScreenToClient(RECT* rectPtr) const;
 	BOOL	ScrollWindow(int xAmount, int yAmount, const RECT* rcPtr, const RECT* rcClipPtr) const;
-	int		ScrollWindowEx(int dx, int dy, const RECT *rcScrollPtr, const RECT *rcClipPtr, HRGN hrgnUpdate, RECT* rcUpdatePtr, UINT flags) const;
+	int		ScrollWindowEx(int dx, int dy, const RECT* rcScrollPtr, const RECT* rcClipPtr, HRGN hrgnUpdate, RECT* rcUpdatePtr, UINT flags) const;
 	LRESULT	SendDlgItemMessage(int nIDDlgItem, UINT uMessage, WPARAM wParam = 0, LPARAM lParam = 0) const;
 	LRESULT	SendMessage(UINT uMessage, WPARAM wParam = 0, LPARAM lParam = 0) const;
 	BOOL	SendNotifyMessage(UINT uMessage, WPARAM wParam = 0, LPARAM lParam = 0) const;
@@ -251,5 +251,6 @@ private:
 	void InitCommControls() const;
 	static LRESULT CALLBACK SafeWndProc(HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam);
 };
+
 
 #endif // !ODMC_WNDS_DMWNDS

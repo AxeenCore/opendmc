@@ -2983,7 +2983,7 @@ BOOL DmWnds::BindWindow(HWND hWnd)
 			// Error handling
 			break;
 		}
-		
+	
 		this->SetSafeHwnd(hWnd);
 		auto dmPrev = ::GetWindowLongPtr(hWnd, GWLP_WNDPROC);
 		auto dmProc = this->GetSafeCallback();

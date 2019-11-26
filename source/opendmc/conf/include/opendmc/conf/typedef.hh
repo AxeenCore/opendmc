@@ -82,6 +82,12 @@
 	typedef UINT32	ADDRS;		//!< 位址型別定義
 #endif
 
+#if defined(ODMC_UNICODE)
+	typedef std::wstring	string_t;
+#else
+	typedef std::string		string_t;
+#endif
+
 /**
  * Define the calling convention symbol
  */

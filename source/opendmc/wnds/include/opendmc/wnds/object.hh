@@ -10,9 +10,15 @@
 #include "opendmc/conf/configure.hh"
 #include "struct.hh"
 
-#define	ODMC_WNDS_MAJOR		1
-#define ODMC_WNDS_MINOR		18
-#define ODMC_WNDS_BUILD		1112
+/**
+ *	@enum	EmWndsVersion
+ *	@brief	opendmc_wnds 版本定義
+ */
+enum EmWndsVersion {
+	WNDS_VER_MAJOR		= 1,		//!< 主版本碼
+	WNDS_VER_MINOR		= 20,		//!< 副版本碼
+	WNDS_VER_BUILD		= 101		//!< 版本建構碼
+};
 
 /**
  *	@class DmWndsObject
@@ -30,8 +36,5 @@ private:
 	DmWndsObject(const DmWndsObject&) = delete;				//!< Disable copy construction
 	DmWndsObject& operator=(const DmWndsObject&) = delete;	//!< Disable assignment operator
 };
-
-
-
 
 #endif // !ODMC_WNDS_OBJECT_HH

@@ -9,6 +9,10 @@
 #define	ODMC_WNDS_IMAGELIST_HH
 #include "object.hh"
 
+/**
+ *	@class DmImageList
+ *	@brief Windows 圖示列表類別
+ */
 class DmImageList : public DmWndsObject
 {
 public:
@@ -65,13 +69,12 @@ public:
 
 protected:
 	void SetSelfHandle(HIMAGELIST hIml) { m_hIml = hIml; }
-
 	HIMAGELIST	m_hIml;		//!< 圖示列表操作代碼
-
 
 protected:
 	DmImageList(const DmImageList&) = delete;				//!< Disable copy construction
 	DmImageList& operator=(const DmImageList&) = delete;	//!< Disable assignment operator
 };
+
 
 #endif // !ODMC_WNDS_IMAGELIST_HH

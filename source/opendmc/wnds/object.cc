@@ -25,9 +25,9 @@ DmWndsObject::~DmWndsObject() { }
  */
 UINT32 DmWndsObject::GetVersionInfo()
 {
-	auto verinfo = static_cast<UINT32>(ODMC_WNDS_MAJOR);
-	verinfo = (verinfo << 8) + static_cast<UINT32>(ODMC_WNDS_MINOR);
-	verinfo = (verinfo << 8) + static_cast<UINT32>(ODMC_WNDS_BUILD);
+	auto verinfo = static_cast<UINT32>(WNDS_VER_MAJOR);
+	verinfo = (verinfo << 8) + static_cast<UINT32>(WNDS_VER_MINOR);
+	verinfo = (verinfo << 8) + static_cast<UINT32>(WNDS_VER_BUILD);
 	return verinfo;
 }
 
@@ -38,10 +38,9 @@ UINT32 DmWndsObject::GetVersionInfo()
  */
 void DmWndsObject::GetVersionOnfo(WNDSVERINFO* smPtr)
 {
-	if (smPtr != NULL)
-	{
-		smPtr->uMajor = ODMC_WNDS_MAJOR;
-		smPtr->uMinor = ODMC_WNDS_MINOR;
-		smPtr->uBuild = ODMC_WNDS_BUILD;
+	if (smPtr != NULL) {
+		smPtr->uMajor = static_cast<unsigned int>(WNDS_VER_MAJOR);
+		smPtr->uMinor = static_cast<unsigned int>(WNDS_VER_MINOR);
+		smPtr->uBuild = static_cast<unsigned int>(WNDS_VER_BUILD);
 	}
 }

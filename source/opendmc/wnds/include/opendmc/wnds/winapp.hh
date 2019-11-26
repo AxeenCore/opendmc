@@ -50,8 +50,6 @@ private:
 	static DmWinapp* SetnGetThis(DmWinapp* thisPtr = NULL, BOOL bReset = FALSE);
 };
 
-
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 // Extern function

@@ -62,6 +62,61 @@ void TransferToWindow(HWND hWnd, int wd, int ht, BITMAPINFO* bmiPtr, void* dataP
 }
 
 /**
+ *	@brief	增強對比度
+ *	@param[in] frame	來源 cv::Mat 物件參考
+ *	@return	此函數沒有返回值
+ */
+void FrameToContrast(cv::Mat& frame)
+{
+	cv::Mat tophat, blackhat;
+	cv::Mat element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(15, 15));
+	cv::morphologyEx(frame, tophat, cv::MORPH_TOPHAT, element, cv::Point(-1, -1));
+	cv::morphologyEx(frame, blackhat, cv::MORPH_BLACKHAT, element, cv::Point(-1, -1));
+	cv::add(frame, tophat, frame);
+	cv::subtract(frame, blackhat, frame);
+}
+
+/**
+ *	@brief	Sobel 邊緣強化
+ *	@param[in]	frame	來源 cv::Mat 物件參考
+ *	@return	此函數沒有返回值
+ */
+void FrameToSobel(cv::Mat& frame)
+{
+	// 高斯平滑
+	cv::GaussianBlur(frame, frame, cv::Size(9, 3), 0, 0);
+	
+	// 利用 Sobel 運算求取垂直邊緣
+	// cv::Sobel(frame, frame, CV_8U, 1, 0);
+	cv::Sobel(frame, frame, CV_8U, 2, 0, 3);
+
+	// 二值化
+	cv::threshold(frame, frame, 0, 255, CV_THRESH_BINARY + CV_THRESH_OTSU);
+}
+
+void FrameToCanny(cv::Mat& frame)
+{
+	// 高斯平滑
+	cv::GaussianBlur(frame, frame, cv::Size(3, 3), 0, 0);
+	cv::Canny(frame, frame, 150, 100);
+	// 二值化
+	cv::threshold(frame, frame, 0, 255, CV_THRESH_BINARY + CV_THRESH_OTSU);
+}
+
+void FrameErosionDilation(cv::Mat frame)
+{
+	//cv::Mat kernel1 = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(9, 1), cv::Point(-1, -1));
+	//cv::Mat kernel2 = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(9, 3), cv::Point(-1, -1));
+	cv::Mat kernel3 = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(21, 5), cv::Point(-1, -1));
+	cv::Mat k1, k2, k3;
+
+	//cv::morphologyEx(frame, k1, CV_MOP_CLOSE, kernel1);
+	//cv::morphologyEx(k1, k2, CV_MOP_CLOSE, kernel2);
+	cv::morphologyEx(frame, k3, CV_MOP_CLOSE, kernel3);
+	frame = k3.clone();
+}
+
+/**
  *	@brief	CxLprFrame 建構式
  */
 CxLprFrame::CxLprFrame()
@@ -131,6 +186,7 @@ void CxLprFrame::SafeUserRelease()
 		m_threadRename->join();
 	}
 	SAFE_DELETE(m_threadRename);
+	m_cvMat.release();
 }
 
 /**
@@ -212,22 +268,45 @@ void CxLprFrame::Rename(CxLprFrame* thisPtr)
 void CxLprFrame::Detection(CxLprFrame* thisPtr)
 {
 	const cv::String url = "rtsp://admin:hisharp123456@210.61.217.151:554/unicast/c5/s1/live";
-	cv::VideoCapture* stream = nullptr;
-	cv::Mat frame;
-	BITMAPINFO bmi;
-	BOOL reset = FALSE;
-	int wd = 0, ht = 0, err = 0;
+	const cv::String wname = "原始圖";
 
+	cv::VideoCapture* stream = nullptr;
+	cv::Mat grayFrame;
+
+	// cv::Mat frame;
+	int			wd = 0;
+	int			ht = 0;
+	int			err = 0;
+	BOOL		bReCamlink = FALSE;
+	BITMAPINFO	bmi;
+	TCHAR		sztext[BUFF_SIZE_SMALL];
+
+	DWORD		lastTime;
+	DWORD		thisTime;
+	int			frameCount;
+
+	// 驗證來源物件正確性
+	if (thisPtr == nullptr || !thisPtr->IsWindow()) {
+		SAFE_DELETE(stream);
+		return;
+	}
+
+	cv::namedWindow(wname, cv::WINDOW_AUTOSIZE /* cv::WINDOW_NORMAL */);
+
+	// 線程 (執行序) 迴圈
 	while (thisPtr->m_keepDetection) {
-		// 連接攝影機，進行串流
+		// 連接攝影機，進行串流 (RTSP)
 		if (stream == nullptr) {
 			stream = ::OpenCapture(url);
 
 			if (stream == nullptr) {
+				// 失敗次數限制
 				if (err > 5) {
 					thisPtr->SetWindowText(TEXT("開啟串流失敗"));
 					break;
 				}
+
+				// 失敗!!!
 				err++;
 				std::this_thread::sleep_for(std::chrono::milliseconds(200));
 				continue;
@@ -237,7 +316,7 @@ void CxLprFrame::Detection(CxLprFrame* thisPtr)
 			stream->set(CV_CAP_PROP_FORMAT, CV_8UC3);
 			wd = static_cast<int>(stream->get(CV_CAP_PROP_FRAME_WIDTH));
 			ht = static_cast<int>(stream->get(CV_CAP_PROP_FRAME_HEIGHT));
-			reset = TRUE;
+			bReCamlink = TRUE;
 		}
 		err = 0;
 
@@ -249,7 +328,8 @@ void CxLprFrame::Detection(CxLprFrame* thisPtr)
 				break;
 			}
 
-			if (!stream->read(frame)) {
+			//thisPtr->SetWindowText(TEXT("等待攝影機 或 RTSP 影像"));
+			if (!stream->read(thisPtr->m_cvMat)) {
 				err++;
 				std::this_thread::sleep_for(std::chrono::milliseconds(200));
 				continue;
@@ -258,15 +338,16 @@ void CxLprFrame::Detection(CxLprFrame* thisPtr)
 			break;
 		}
 
+		// thisPtr->SetWindowText(TEXT("圖形演算..."));
 		if (stream) {
-			if (reset) {
+			if (bReCamlink) {
 				thisPtr->SetClientSize(wd, ht);
 				thisPtr->CenterWindow();
 
 				::memset(&bmi, 0, sizeof(BITMAPINFO));
 				bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
 				bmi.bmiHeader.biWidth = wd;
-				bmi.bmiHeader.biHeight = -ht;	// 標準 BMP 起始座標為左下，若正像圖於 Windows DIB 顯示時將會被反向, 所以要正向顯示必須為高必須為負值。
+				bmi.bmiHeader.biHeight = -ht;		// 標準 BMP 起始座標為左下，若正像圖於 Windows DIB 顯示時將會被反向, 所以要正向顯示必須為高必須為負值。
 				bmi.bmiHeader.biPlanes = 1;		// must be 1
 				bmi.bmiHeader.biBitCount = 24;
 				bmi.bmiHeader.biXPelsPerMeter = 0;
@@ -277,17 +358,43 @@ void CxLprFrame::Detection(CxLprFrame* thisPtr)
 				bmi.bmiHeader.biClrImportant = 0;
 				bmi.bmiHeader.biSizeImage = 0;
 
-				reset = FALSE;
+				lastTime = ::timeGetTime();
+				frameCount = 0;
+				bReCamlink = FALSE;
 			}
 
+			thisTime = ::timeGetTime();
+			if ((thisTime - lastTime) > 1000) {
+				auto div = thisTime - lastTime;
+				auto fps = 0.0f;
+
+
+
+				lastTime = thisTime;
+				::wsprintf(sztext, TEXT("輸出幀率 : %0.2f"), frameCount);
+				//thisPtr->SetWindowText(sztext);
+				frameCount = 0;
+			}
+			else frameCount++;
+
+			cv::cvtColor(thisPtr->m_cvMat, grayFrame, CV_BGR2GRAY);
+			//::FrameToContrast(grayFrame);
+			::FrameToSobel(grayFrame);
+			::FrameErosionDilation(grayFrame);
+			cv::cvtColor(grayFrame, grayFrame, CV_GRAY2RGB);
+
 			// 輸出至 Window
-			::TransferToWindow(thisPtr->GetSafeHwnd(), wd, ht, &bmi, frame.data);
+			cv::imshow(wname, thisPtr->m_cvMat);
+			cv::waitKey(1);
+			//::TransferToWindow(thisPtr->GetSafeHwnd(), wd, ht, &bmi, thisPtr->m_cvMat.data);
+			::TransferToWindow(thisPtr->GetSafeHwnd(), wd, ht, &bmi, grayFrame.data);
 		}
 
 		//cv::imshow(caption, frame);
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
 
+	cv::destroyAllWindows();
 	thisPtr->m_keepDetection = FALSE;
 	if (stream != nullptr) {
 		stream->release();

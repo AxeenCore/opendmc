@@ -36,6 +36,7 @@ BOOL DmCombo::Create(const TCHAR* szCaptionPtr, int x, int y, int wd, int ht, HW
 	const DWORD dwExStyle = 0;
 	WNDSCTRLS smCtrl;
 
+	UNREFERENCED_PARAMETER(szCaptionPtr);
 	::memset(&smCtrl, 0, sizeof(smCtrl));
 	smCtrl.hInstance	= ::GetWinapp().GetInstanceHandle();
 	smCtrl.hParent		= hWndParent;

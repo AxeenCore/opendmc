@@ -33,6 +33,7 @@ private:
 
 	BOOL m_keepRename;
 	BOOL m_keepDetection;
+	cv::Mat m_cvMat;
 	std::thread* m_threadRename;
 	std::thread* m_threadDetection;
 };

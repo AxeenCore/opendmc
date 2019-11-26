@@ -8,12 +8,14 @@
 #include "opendmc/wnds/imagelist.hh"
 
 /**
- * DmImageList 建構式
+ *	@brief	DmImageList 建構式
+ *	@retuen	此函數沒有返回值
  */
 DmImageList::DmImageList() : DmWndsObject(), m_hIml(NULL) { }
 
 /**
- * DmImageList 解構式
+ *	@brief	DmImageList 解構式
+ *	@return	此函數沒有返回值
  */
 DmImageList::~DmImageList() { }
 

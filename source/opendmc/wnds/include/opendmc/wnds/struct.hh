@@ -35,7 +35,7 @@
 
 /**
  *	@enum	EmLVColumn
- *	@brief	列舉 ListView 顯示位置設定值 
+ *	@brief	列舉 ListView 顯示位置設定值
  */
 enum class EmLVColumn
 {
@@ -102,8 +102,8 @@ struct WNDSFRAME {
 	HINSTANCE		hInstance;		//!< set handle of instance (handle of process module)
 	HWND			hWndParent;		//!< set handle of parent window
 	WNDPROC			fnWndProc;		//!< set a window call-back function pointer, must be NULL
-	const TCHAR*	pszClass;		//!< pointer of class name
-	const TCHAR*	pszCaption;		//!< pointer of window's name
+	const TCHAR* pszClass;		//!< pointer of class name
+	const TCHAR* pszCaption;		//!< pointer of window's name
 	int				nPosx;			//!< set display window x-coordinate
 	int				nPosy;			//!< set display window y-coordinate
 	int				nWidth;			//!< set window client-area width
@@ -116,9 +116,9 @@ struct WNDSFRAME {
 	DWORD			dwStyle;		//!< set window style
 	DWORD			dwExStyle;		//!< set window extend style
 	HMENU			hMenuOrItemID;	//!< set menu headle or item id
-	void*			vParam;			//!< create a window parameter
+	void* vParam;			//!< create a window parameter
 };
-typedef WNDSFRAME*	LPWNDSFRAME;	//!< 結構 WNDSFRAME 指標型態
+typedef WNDSFRAME* LPWNDSFRAME;	//!< 結構 WNDSFRAME 指標型態
 #define WNDS_DEFAULT_CLASSNAME		"OPENDMC_FRAME_CLASS"	//!< 預設視窗註冊名稱
 #define WNDS_DEFAULT_CAPTION		"OpenDMC Sample Window"	//!< 預設視窗標題名稱
 #define WNDS_DEFAULT_PROFILE		"profile.bin"			//!< 視窗版面保存檔案名稱
@@ -134,8 +134,8 @@ typedef WNDSFRAME*	LPWNDSFRAME;	//!< 結構 WNDSFRAME 指標型態
 struct WNDSCTRLS {
 	HINSTANCE		hInstance;		//!< the handle of module
 	HWND			hParent;		//!< handle of parent window
-	const TCHAR*	pszClass;		//!< conctrller item common controls class name
-	const TCHAR*	pszCaption;		//!< conctrller item window text
+	const TCHAR* pszClass;		//!< conctrller item common controls class name
+	const TCHAR* pszCaption;		//!< conctrller item window text
 	DWORD			dwStyle;		//!< conctrller item style
 	DWORD			dwExStyle;		//!< conctrller item extern style
 	int				nPosx;			//!< start draw position (x-coordination)
@@ -144,7 +144,7 @@ struct WNDSCTRLS {
 	int				nHeight;		//!< the window height
 	int				nIDCItem;		//!< conctrller item id
 };
-typedef WNDSCTRLS*	LPWNDSCTRLS;	//!< WINSCTRLS 結構指標型別
+typedef WNDSCTRLS* LPWNDSCTRLS;	//!< WINSCTRLS 結構指標型別
 
 /**
  *	@struct WNDSPARAM
@@ -153,8 +153,8 @@ typedef WNDSCTRLS*	LPWNDSCTRLS;	//!< WINSCTRLS 結構指標型別
 struct WNDSPARAM {
 	WPARAM	wParam;					//!< 參數 wParam
 	LPARAM	lParam;					//!< 參數 lParam;
-	void*	dmParam1;				//!< 物件指標 (保留)
-	void*	dmParam2;				//!< 物件指標 (保留)
+	void* dmParam1;				//!< 物件指標 (保留)
+	void* dmParam2;				//!< 物件指標 (保留)
 };
 typedef	WNDSPARAM* LPWNDSPARAM;		//!< 結構 WINSPARAM 指標型態
 
