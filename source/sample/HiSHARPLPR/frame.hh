@@ -9,10 +9,12 @@
 #define	ODMC_HISHARPLPR_FRAME_HH
 #include "detection.hh"
 
- /**
-  *	@class LPRFrame
-  *	@brief LPRFrame 主視窗類別
-  */
+#define USES_VIDEO_MODE
+
+/**
+ *	@class LPRFrame
+ *	@brief LPRFrame 主視窗類別
+ */
 class LPRFrame : public DmWnds
 {
 public:
@@ -26,9 +28,10 @@ protected:
 	void WmUserCreate(WPARAM wParam, LPARAM lParam) override;
 	LRESULT WndProc(UINT uMessage, WPARAM wParam, LPARAM lParam) override;
 
+	void DetectionFormPicture(cv::String& filename);
+
 	void EndDetection();
 	static void DetectionProcess(LPRFrame* framePtr);
-	static void DetectionProcessEx(LPRFrame* framePtr);
 
 private:
 	LPRFrame(const LPRFrame&) = delete;				//!< Disable copy construction

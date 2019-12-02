@@ -38,7 +38,6 @@ protected:
 	virtual int MessageLoopStandardEx();
 	void DefinitionMainframe(LONG_PTR lParam);
 
-
 	BOOL		m_bInitialize;		//!< 初始化是否成功
 	HINSTANCE	m_hInstance;		//!< Windows 程序實例操作代碼
 	HINSTANCE	m_hResource;		//!< Windows 資源實例操作代碼

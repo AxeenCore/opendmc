@@ -9,11 +9,14 @@
 #define ODMC_HISHARPLPR_DETECTION_HH
 #include "define.hh"
 
+extern void SetBMPInfo(BITMAPINFO* biPtr, int wd, int ht);
+extern void ShowSurface(HWND hWnd, int x, int y, int wd, int ht, BITMAPINFO* bmiPtr, void* dataPtr);
+
 extern cv::VideoCapture* OpenVideoCapture(const cv::String& url);
-extern void TransferToWindow(HWND hWnd, int wd, int ht, BITMAPINFO* bmiPtr, void* dataPtr, bool haff=false);
 extern void FrameToContrast(cv::Mat& frame);
 extern void FrameToSobel(cv::Mat& frame);
 extern void FrameToCanny(cv::Mat& frame);
-extern void FrameErosionDilation(cv::Mat frame);
+extern void FrameCloseOperation(cv::Mat& frame);
+extern void getMaxArea(cv::Mat& frame, cv::Mat& closeImage);
 extern void VideoCaptureProcess(cv::Mat& buffer, std::mutex& mutex, void* keepPtr, void* restPtr);
 #endif // !ODMC_HISHARPLPR_DETECTION_HH
