@@ -15,7 +15,7 @@ CxSmwFrame::CxSmwFrame() : DmWnds() { }
 /**
  *	@brief	CxSmwFrame 解構式
  */
-CxSmwFrame::~CxSmwFrame() { this->SafeWndsDestroy(); }
+CxSmwFrame::~CxSmwFrame() { this->DestroyMine(); }
 
 /**
  *	@brief	建立視窗

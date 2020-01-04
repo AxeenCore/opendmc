@@ -7,7 +7,7 @@
  *****************************************************************************/
 #ifndef ODMC_IMAGE_SURFACE_HH
 #define	ODMC_IMAGE_SURFACE_HH
-#include "opendmc/image/imdefine.hh"
+#include "opendmc/image/imagedef.hh"
 
 /**
  *	@class DmSurface
@@ -22,15 +22,15 @@ public:
 
 	BOOL CreateSurface(int wd, int ht, int bitCount);
 	#if defined(ODMC_WINDOWS)
-	void TransferToWindow(HWND hWnd);
+	void Flip(HWND hWnd);
 	#endif
 
-	int GetWidth()		{ return m_nWidth; }
-	int GetHeight()		{ return m_nHeight; }
-	int GetScanline()	{ return m_nScanline; }
-	int GetBitCount()	{ return m_nBitCount; }
-	UINT8* GetImageData() { return m_bitPtr; }
-	UINT32 GetImageSize() { return m_uSize; }
+	int		GetWidth()		{ return m_nWidth; }
+	int		GetHeight()		{ return m_nHeight; }
+	int		GetScanline()	{ return m_nScanline; }
+	int		GetBitCount()	{ return m_nBitCount; }
+	UINT8*	GetImageData()	{ return m_bitPtr; }
+	UINT32	GetImageSize()	{ return m_uSize; }
 
 protected:
 	int	 ScanlineLength(int wd, int ht, int bitCount);

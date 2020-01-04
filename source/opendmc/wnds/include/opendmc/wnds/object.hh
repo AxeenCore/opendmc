@@ -17,7 +17,7 @@
 enum EmWndsVersion {
 	WNDS_VER_MAJOR		= 1,		//!< 主版本碼
 	WNDS_VER_MINOR		= 20,		//!< 副版本碼
-	WNDS_VER_BUILD		= 101		//!< 版本建構碼
+	WNDS_VER_BUILD		= 1209		//!< 版本建構碼
 };
 
 /**

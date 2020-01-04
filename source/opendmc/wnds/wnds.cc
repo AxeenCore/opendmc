@@ -40,7 +40,7 @@ DmWnds::DmWnds(EmCtrls eType)
  *	@brief DmWnds 解構式
  *	@remark 解構時，釋放(銷毀)控制項
  */
-DmWnds::~DmWnds() { this->SafeWndsDestroy(); }
+DmWnds::~DmWnds() { this->DestroyMine(); }
 
 /**
  *	@brief [虛擬函數] 連接已存在的視窗或控制項
@@ -80,7 +80,7 @@ BOOL DmWnds::AttachDlgItem(HWND hWndParent, int nIDCItem)
  *	@brief 斷開連接，配合 Attach 函數使用。
  *	@return 此函數沒有返回值
  */
-void DmWnds::Detach() { this->SafeWndsRelease(); }
+void DmWnds::Detach() { this->ReleaseMine(); }
 
 /**
  *	@brief [虛擬函數] 建立控制項，內容由繼承者發展，基底永遠返回零。
@@ -130,7 +130,7 @@ BOOL DmWnds::Create(const TCHAR* szPtr, int x, int y, int wd, int ht, HWND hWndP
 		return this->CreateFrame(&smFrame);
 	} else {
 		// 建立控制項
-		auto type = this->GetSafeType();
+		auto type = this->GetMineType();
 
 		// 控制項判別
 		switch (type)
@@ -251,8 +251,7 @@ BOOL DmWnds::CreateEx(DWORD dwExStyle, const TCHAR* szClassPtr, const TCHAR* szC
  *	@brief 建立一個樣本視窗框架
  *	@return	<b>型別: BOOL</b> 若視窗建立成功返回值為非零值，若視窗建立失敗責返回值為零。
  */
-#if 0
-BOOL DmWnds::CreateSample()
+BOOL DmWnds::CreateMine()
 {
 	const TCHAR* szClassPtr = this->GetControlsClassName();
 
@@ -260,21 +259,21 @@ BOOL DmWnds::CreateSample()
 		// 填寫 WINSFRAME 結構內容
 		WNDSFRAME ws;
 		::memset((void*)&ws, 0, sizeof(WNDSFRAME));
-		ws.hInstance = ::GetWinapp().GetInstanceHandle();
-		ws.hWndParent = NULL;
-		ws.szClassPtr = const_cast<TCHAR*>(TEXT(WNDS_DEFAULT_CLASSNAME));
-		ws.szCaptionPtr = const_cast<TCHAR*>(TEXT(WNDS_DEFAULT_CAPTION));
-		ws.nPosx = 0;
-		ws.nPosy = 0;
-		ws.nWidth = WNDS_DEFAULT_WIDTH;
-		ws.nHeight = WNDS_DEFAULT_HEIGHT;
-		ws.uClassStyle = 0;
-		ws.hBackground = (HBRUSH)(COLOR_BTNFACE + 1);
-		ws.hIcon = NULL;
-		ws.hIconSm = NULL;
-		ws.hCursor = NULL;
-		ws.dwStyle = WNDS_DEFAULT_STYLE;
-		ws.dwExStyle = WNDS_DEFAULT_EXSTYLE;
+		ws.hInstance	= ::GetWinapp().GetInstanceHandle();
+		ws.hWndParent	= NULL;
+		ws.pszClass		= const_cast<TCHAR*>(TEXT(WNDS_DEFAULT_CLASSNAME));
+		ws.pszCaption	= const_cast<TCHAR*>(TEXT(WNDS_DEFAULT_CAPTION));
+		ws.nPosx		= 0;
+		ws.nPosy		= 0;
+		ws.nWidth		= WNDS_DEFAULT_WIDTH;
+		ws.nHeight		= WNDS_DEFAULT_HEIGHT;
+		ws.uClassStyle	= 0;
+		ws.hBackground	= (HBRUSH)(COLOR_BTNFACE + 1);
+		ws.hIcon		= NULL;
+		ws.hIconSm		= NULL;
+		ws.hCursor		= NULL;
+		ws.dwStyle		= WNDS_DEFAULT_STYLE;
+		ws.dwExStyle	= WNDS_DEFAULT_EXSTYLE;
 		ws.hMenuOrItemID = 0;
 		ws.vParam = NULL;
 
@@ -288,14 +287,13 @@ BOOL DmWnds::CreateSample()
 	}
 	return FALSE;
 }
-#endif
 
 /**
  *	@brief	取得控制項種類
  *	@return	<b>型別: EmCtrls</b> \n 返回控制項種類代碼
  *	@see	EmCtrls
  */
-EmCtrls DmWnds::GetSafeType() const { return m_eType; }
+EmCtrls DmWnds::GetMineType() const { return m_eType; }
 
 /**
  *	@brief	取得控制項操作代碼
@@ -303,7 +301,7 @@ EmCtrls DmWnds::GetSafeType() const { return m_eType; }
  *		\n 若控制項已存在返回值為非零值，返回值為控制項操作代碼。
  *		\n 若控制項不存在返回值為零。
  */
-HWND DmWnds::GetSafeHwnd() const { return m_hWnd; }
+HWND DmWnds::GetMineHwnd() const { return m_hWnd; }
 
 /**
  *	@brief	取得使用者定義字型操作代碼
@@ -311,19 +309,19 @@ HWND DmWnds::GetSafeHwnd() const { return m_hWnd; }
  *		\n 若使用者字型已建立則返回值為非零值，返回值為自行操作代碼。
  *		\n 若使用者字型未建立則返回值為零。
  */
-HFONT DmWnds::GetSafeFont() const { return m_hFont; }
+HFONT DmWnds::GetMineFont() const { return m_hFont; }
 
 /**
  *	@brief	取得控制項訊息處理 Callback 函數位址
  *	@return	<b>型別: LONG_PTR</b> \n 返回值為控制項訊息處理 Callback 函數位址。
  */
-LONG_PTR DmWnds::GetSafeCallback() const { return reinterpret_cast<LONG_PTR>(DmWnds::SafeWndProc); }
+LONG_PTR DmWnds::GetMineCallback() const { return reinterpret_cast<LONG_PTR>(DmWnds::StaticWndProc); }
 
 /**
  *	@brief	取得變更前的控制項訊息處理 Callback 函數位址
  *	@return	<b>型別: LONG_PTR</b> \n 返回值為變更前的控制項訊息處理 Callback 函數位址
  */
-LONG_PTR DmWnds::GetSafePrevCallback() const { return m_lPrevCallback; }
+LONG_PTR DmWnds::GetMinePrevCallback() const { return m_lPrevCallback; }
 
 /**
  *	@brief 建立視窗框架
@@ -458,7 +456,7 @@ BOOL DmWnds::CreateSafeFont(const TCHAR* szFacePtr, int nSize, BOOL bBlod, int n
 	auto hFont = this->CreateFont(szFacePtr, nSize, bBlod, nCharset);
 	if (hFont != NULL) {
 		this->SetFont(hFont);
-		this->SetSafeFont(hFont);
+		this->SetMineFont(hFont);
 	}
 	return hFont != NULL;
 }
@@ -471,7 +469,7 @@ void DmWnds::DeleteSafeFont()
 {
 	if (m_hFont != NULL) {
 		this->DeleteFont(m_hFont);
-		this->SetSafeFont(NULL);
+		this->SetMineFont(NULL);
 	}
 }
 
@@ -510,7 +508,7 @@ BOOL DmWnds::CenterWindow() const
 	assert(this->IsWindow());
 
 	BOOL bResult = FALSE;
-	HWND hWnd = this->GetSafeHwnd();
+	HWND hWnd = this->GetMineHwnd();
 	HWND hParent;
 	int  x, y, w, h;
 	RECT rc;
@@ -697,6 +695,49 @@ BOOL DmWnds::DisableWindow() const
 {
 	assert(this->IsWindow());
 	return ::EnableWindow(*this, FALSE);
+}
+
+/**
+ *	@brief	顯示 BMP 圖形
+ *	@param[in] x		座標 X
+ *	@param[in] y		座標 Y
+ *	@param[in] wd		圖形寬度
+ *	@param[in] ht		圖形高度
+ *	@param[in] bmiPtr	(指標) 指向 BITMAPINFO 結構緩衝區，內容為 BMP 圖形資訊。
+ *	@param[in] dataPtr	(指標) 指向圖形資料緩衝區
+ *	@return	<b>型別: bool</b> \n 若函數操作成功返回值為非零值。 \n 若函數操作失敗則返回值為零。
+ */
+bool DmWnds::DisplayBitmap(int x, int y, int wd, int ht, BITMAPINFO* bmiPtr, void* dataPtr) const
+{
+	assert(this->IsWindow());
+	HDC hDC = nullptr;
+
+	if (dataPtr == nullptr || bmiPtr == nullptr) {
+		return false;
+	}
+
+	// Get target window DC (device context)
+	if ((hDC = ::GetDC(*this)) == nullptr) {
+		return false;
+	}
+
+	// draw image to target device contex
+	auto okey = ::SetDIBitsToDevice(
+		hDC,				// handle of device context
+		x,					// destination start x-coordinate
+		y,					// destination start y-coordinate
+		wd,					// width
+		ht,					// height
+		0,					// source strat x-coordinate
+		0,					// source start y-coordinate
+		0,					// start scan-line
+		static_cast<UINT>(ht),	// lines
+		dataPtr,			// bit data
+		bmiPtr,				// BITMAPINFO structure
+		DIB_RGB_COLORS);	// Color use 
+
+	if (hDC) ::ReleaseDC(*this, hDC);
+	return okey != 0;
 }
 
 /**
@@ -1811,20 +1852,21 @@ void DmWnds::MapWindowPoints(HWND hWndTo, RECT* rcPtr) const
 }
 
 /**
- *	@brief Displays a modal dialog box that contains a system icon, a set of buttons, and a brief application-specific message, such as status or error information.
+ *	@brief Displays a modal dialog box that contains a system icon,
+ *		\n a set of buttons, and a brief application-specific message, such as status or error information.
  *		\n The message box returns an integer value that indicates which button the user clicked.
  *	@param[in] textPtr		Points to a null-terminated string containing the message to be displayed.
- *	@param[in] szCaptionPtr	Points to a null-terminated string to be used for the message-box caption.  If lpszCaption is NULL, the default caption "Error" is used.
+ *	@param[in] captionPtr	Points to a null-terminated string to be used for the message-box caption. If lpszCaption is NULL, the default caption "Error" is used.
  *	@param[in] uType		Specifies the contents and behavior of the message box.
  *	@return <b>型別: int</b>
  *		\n If a message box has a Cancel button, the function returns the IDCANCEL value if either the ESC key is pressed or the Cancel button is selected. If the message box has no Cancel button, pressing ESC has no effect.
  *		\n If the function fails, the return value is zero. To get extended error information, call GetLastError.
  *		\n If the function succeeds, the return value is one of the following menu-item values.
  */
-int DmWnds::MessageBox(const TCHAR* textPtr, const TCHAR* szCaptionPtr, UINT uType) const
+int DmWnds::MessageBox(const TCHAR* textPtr, const TCHAR* captionPtr, UINT uType) const
 {
 	assert(this->IsWindow());
-	return ::MessageBox(*this, textPtr, szCaptionPtr, uType);
+	return ::MessageBox(*this, textPtr, captionPtr, uType);
 }
 
 /**
@@ -2311,7 +2353,7 @@ HWND DmWnds::SetFocus(HWND hWnd) const
 {
 	HWND hWndPrev = NULL;
 	if (hWnd == reinterpret_cast<HWND>(-1)) {
-		hWnd = this->GetSafeHwnd();
+		hWnd = this->GetMineHwnd();
 	}
 
 	if (::IsWindow(hWnd)) {
@@ -2793,7 +2835,7 @@ HWND DmWnds::WindowFromPoint(POINT stPoint) const { return ::WindowFromPoint(stP
 LRESULT DmWnds::PassToNextWndProc(UINT uMessage, WPARAM wParam, LPARAM lParam)
 {
 	// 呼叫原視窗處理函數
-	auto fnCallback = reinterpret_cast<WNDPROC>(this->GetSafePrevCallback());
+	auto fnCallback = reinterpret_cast<WNDPROC>(this->GetMinePrevCallback());
 	if (fnCallback != NULL) {
 		return ::CallWindowProc(fnCallback, *this, uMessage, wParam, lParam);
 	}
@@ -2898,7 +2940,7 @@ void DmWnds::WmNcDestroy(WPARAM wParam, LPARAM lParam)
 	UNREFERENCED_PARAMETER(wParam);
 	UNREFERENCED_PARAMETER(lParam);
 	// 釋放所有資源與物件，恢復所有預設。
-	this->SafeWndsRelease();
+	this->ReleaseMine();
 }
 
 /**
@@ -2911,7 +2953,7 @@ void DmWnds::WmClose(WPARAM wParam, LPARAM lParam)
 {
 	UNREFERENCED_PARAMETER(wParam);
 	UNREFERENCED_PARAMETER(lParam);
-	this->SafeWndsDestroy(static_cast<int>(wParam));
+	this->DestroyMine(static_cast<int>(wParam));
 }
 
 /**
@@ -2944,27 +2986,27 @@ LRESULT DmWnds::WndProc(UINT uMessage, WPARAM wParam, LPARAM lParam)
  *	@brief 設定 (保存) 對話框種類
  *	@return 此函數沒有返回值
  */
-void DmWnds::SetSafeType(EmCtrls eType) { m_eType = eType; }
+void DmWnds::SetMineType(EmCtrls eType) { m_eType = eType; }
 
 /**
  *	@brief 保存使用者自定義字型
  *	@param[in] hFont 字型操作代碼
  *	@return 此函數沒有返回值
  */
-void DmWnds::SetSafeFont(HFONT hFont) { m_hFont = hFont; }
+void DmWnds::SetMineFont(HFONT hFont) { m_hFont = hFont; }
 
 /**
  *	@brief 保存綁定的視窗操作代碼
  *	@param[in] hWnd 視窗代碼
  *	@retuen 此函數沒有返回值
  */
-void DmWnds::SetSafeHwnd(HWND hWnd) { m_hWnd = hWnd; }
+void DmWnds::SetMineHwnd(HWND hWnd) { m_hWnd = hWnd; }
 
 /**
  *	@brief 保存改變前的視窗訊息處理 Callback 函數位址
  *	@param[in] lCallback 指向 Callback 函數位址
  */
-void DmWnds::SetSafePrevCallback(LONG_PTR lCallback) { m_lPrevCallback = lCallback; }
+void DmWnds::SetMinePrevCallback(LONG_PTR lCallback) { m_lPrevCallback = lCallback; }
 
 /**
  *	@brief [虛擬函數] 綁定視窗於物件
@@ -2984,19 +3026,19 @@ BOOL DmWnds::BindWindow(HWND hWnd)
 			break;
 		}
 	
-		this->SetSafeHwnd(hWnd);
+		this->SetMineHwnd(hWnd);
 		auto dmPrev = ::GetWindowLongPtr(hWnd, GWLP_WNDPROC);
-		auto dmProc = this->GetSafeCallback();
+		auto dmProc = this->GetMineCallback();
 
 		::SetWindowLongPtr(*this, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
 		if (dmPrev != dmProc) {
 			// 設定新的訊息處理 Callback 函數位址
 			dmPrev = ::SetWindowLongPtr(hWnd, GWLP_WNDPROC, dmProc);
-			this->SetSafePrevCallback(dmPrev);
+			this->SetMinePrevCallback(dmPrev);
 		}
 		break;
 	}
-	return this->GetSafeHwnd() != NULL;
+	return this->GetMineHwnd() != NULL;
 }
 
 /**
@@ -3006,7 +3048,7 @@ BOOL DmWnds::BindWindow(HWND hWnd)
 void DmWnds::LooseWindow()
 {
 	// 恢復原始訊息處理 Callback
-	auto fnCallback = this->GetSafePrevCallback();
+	auto fnCallback = this->GetMinePrevCallback();
 	if (fnCallback != 0) {
 		::SetWindowLongPtr(*this, GWLP_USERDATA, 0);
 		::SetWindowLongPtr(*this, GWLP_WNDPROC, fnCallback);
@@ -3019,7 +3061,7 @@ void DmWnds::LooseWindow()
  *	@param[in] nExitCode	結束程式返回碼
  *	@return 此函數沒有返回值
  */
-void DmWnds::SafeWndsDestroy(int nExitCode)
+void DmWnds::DestroyMine(int nExitCode)
 {
 	if (this->IsWindow()) {
 
@@ -3031,7 +3073,7 @@ void DmWnds::SafeWndsDestroy(int nExitCode)
 
 		// 要求銷毀綁定中的控制項(視窗)
 		::DestroyWindow(*this);
-		this->SafeWndsWaiting();
+		this->DestroyWaiting();
 
 		// 是主視窗嗎? 若是主視窗則送出結束訊息迴圈訊息。
 		if (::GetWinapp().GetMainframe() == reinterpret_cast<LONG_PTR>(this)) {
@@ -3044,22 +3086,23 @@ void DmWnds::SafeWndsDestroy(int nExitCode)
  *	@brief [虛擬函數] 釋放所有物件與資源
  *	@return 此函數沒有返回值
  */
-void DmWnds::SafeWndsRelease()
+void DmWnds::ReleaseMine()
 {
 	this->SafeUserRelease();	// 呼叫 '純' 虛擬函數，繼承者釋放函數。
 	this->LooseWindow();		// 恢復原先的訊息處理 Callback 函數, 恢復使用者訊息
 	this->DeleteSafeFont();		// 刪除使用者自定義字型
 
-	this->SetSafePrevCallback(0);
-	this->SetSafeFont(NULL);
-	this->SetSafeHwnd(NULL);
+	this->SetMinePrevCallback(0);
+	this->SetMineFont(NULL);
+	this->SetMineHwnd(NULL);
 }
 
 /**
- *	@brief 等待視窗結束
+ *	@brief	等待視窗被銷毀 (摧毀、釋放)
  *	@return	此函數沒有返回值
+ *	@note	當進行銷毀視窗時，會有多個步驟進行作業，等待與確定視窗真正被系統釋放。
  */
-void DmWnds::SafeWndsWaiting()
+void DmWnds::DestroyWaiting()
 {
 	// 等待視窗被終結
 	for (int i = 0; i < WNDS_DESTORY_OVERTIME; i++) {
@@ -3083,7 +3126,7 @@ BOOL DmWnds::SafeRegisterClass(const WNDSFRAME* smPtr)
 	HCURSOR		hCusr = NULL;
 	HICON		hIcon = NULL;
 	HBRUSH		hBrsh = NULL;
-	auto		fnWndProc = reinterpret_cast<WNDPROC>(this->GetSafeCallback());
+	auto		fnWndProc = reinterpret_cast<WNDPROC>(this->GetMineCallback());
 	WNDCLASSEX	wcex;
 
 	for (;;) {
@@ -3293,7 +3336,7 @@ void DmWnds::InitCommControls() const
  *	@param[in] lParam	訊息參數
  *	@return <b>型別: LRESULT</b> \n 訊息處理後返回值
  */
-LRESULT CALLBACK DmWnds::SafeWndProc(HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK DmWnds::StaticWndProc(HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam)
 {
 	DmWnds* dmWnds = reinterpret_cast<DmWnds*>(::GetWindowLongPtr(hWnd, GWLP_USERDATA));
 

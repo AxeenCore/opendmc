@@ -20,9 +20,9 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
-    <ProjectGuid>{8D4955C7-46E6-4475-8CD9-8AD57BA060B8}</ProjectGuid>
+    <ProjectGuid>{E32F4FBA-4C22-4E13-BDE9-6BAB86F5BD87}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>HSLPR</RootNamespace>
+    <RootNamespace>CarPlate</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -98,7 +98,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>..\..\..\source\opendmc\conf\include;..\..\..\source\opendmc\wnds\include;..\..\..\..\\3rdparty\opencv-4.1.2\build\install\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\source\opendmc\conf\include;..\..\..\source\opendmc\wnds\include;..\..\..\source\opendmc\image\include;..\..\..\..\3rdparty\opencv-4.1.2\build\install\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -116,7 +116,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>..\..\..\source\opendmc\conf\include;..\..\..\source\opendmc\wnds\include;..\..\..\..\\3rdparty\opencv-4.1.2\build\install\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\source\opendmc\conf\include;..\..\..\source\opendmc\wnds\include;..\..\..\source\opendmc\image\include;..\..\..\..\3rdparty\opencv-4.1.2\build\install\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -134,7 +134,7 @@
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>..\..\..\source\opendmc\conf\include;..\..\..\source\opendmc\wnds\include;..\..\..\..\\3rdparty\opencv-4.1.2\build\install\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\source\opendmc\conf\include;..\..\..\source\opendmc\wnds\include;..\..\..\source\opendmc\image\include;..\..\..\..\3rdparty\opencv-4.1.2\build\install\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -152,7 +152,7 @@
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>..\..\..\source\opendmc\conf\include;..\..\..\source\opendmc\wnds\include;..\..\..\..\\3rdparty\opencv-4.1.2\build\install\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\source\opendmc\conf\include;..\..\..\source\opendmc\wnds\include;..\..\..\source\opendmc\image\include;..\..\..\..\3rdparty\opencv-4.1.2\build\install\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -163,14 +163,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\source\sample\HSLPR\lpr_apps.cc" />
-    <ClCompile Include="..\..\..\source\sample\HSLPR\lpr_frame.cc" />
-    <ClCompile Include="..\..\..\source\sample\HSLPR\lpr_main.cc" />
+    <ClCompile Include="..\..\..\source\sample\CarPlate\apps.cc" />
+    <ClCompile Include="..\..\..\source\sample\CarPlate\detection.cc" />
+    <ClCompile Include="..\..\..\source\sample\CarPlate\main.cc" />
+    <ClCompile Include="..\..\..\source\sample\CarPlate\mainform.cc" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\source\sample\HSLPR\lpr_apps.hh" />
-    <ClInclude Include="..\..\..\source\sample\HSLPR\lpr_define.hh" />
-    <ClInclude Include="..\..\..\source\sample\HSLPR\lpr_frame.hh" />
+    <ClInclude Include="..\..\..\source\sample\CarPlate\apps.hh" />
+    <ClInclude Include="..\..\..\source\sample\CarPlate\carplate.hh" />
+    <ClInclude Include="..\..\..\source\sample\CarPlate\detection.hh" />
+    <ClInclude Include="..\..\..\source\sample\CarPlate\mainform.hh" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

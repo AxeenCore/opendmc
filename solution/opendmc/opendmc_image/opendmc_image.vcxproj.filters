@@ -18,7 +18,10 @@
     <ClInclude Include="..\..\..\source\opendmc\image\include\opendmc\image\surface.hh">
       <Filter>標頭檔</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\source\opendmc\image\include\opendmc\image\imdefine.hh">
+    <ClInclude Include="..\..\..\source\opendmc\image\include\opendmc\image\imagedef.hh">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\opendmc\image\include\opendmc\opendmc_image.hh">
       <Filter>標頭檔</Filter>
     </ClInclude>
   </ItemGroup>

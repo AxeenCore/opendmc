@@ -16,7 +16,7 @@ DmTreeView::DmTreeView() : DmWnds(EmCtrls::TreeView) { }
  *	@brief DmTreeView 解構式
  *	@remark 解構時進行釋放(摧毀)控制項
  */
-DmTreeView::~DmTreeView() { this->SafeWndsDestroy(); }
+DmTreeView::~DmTreeView() { this->DestroyMine(); }
 
 /**
  *	@brief [重載] 建立一個樹狀圖示列表 TreeView

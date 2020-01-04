@@ -18,7 +18,7 @@ DmDialog::DmDialog() : DmWnds(EmCtrls::Dialog) { }
  *	@return 此函數沒有返回值
  *	@remark 解構時，進行釋放(銷毀)控制項
  */
-DmDialog::~DmDialog() { this->SafeWndsDestroy(); }
+DmDialog::~DmDialog() { this->DestroyMine(); }
 
 /**
  *	@brief 建立 Modal 對話框
@@ -33,7 +33,7 @@ INT_PTR DmDialog::DoModal(const TCHAR* szTemplatePtr, HWND hWndParent)
 {
 	INT_PTR nResult = -1;	// 預設返回錯誤
 	auto hInst = ::GetWinapp().GetInstanceHandle();
-	auto fnProc = reinterpret_cast<DLGPROC>(this->GetSafeCallback());
+	auto fnProc = reinterpret_cast<DLGPROC>(this->GetMineCallback());
 	WNDSPARAM smParam;
 
 	for (;;) {
@@ -104,7 +104,7 @@ BOOL DmDialog::DoModeless(const TCHAR* szTemplatePtr, HWND hWndParent)
 {
 	BOOL bResult = FALSE;	// 預設返回錯誤
 	auto hInst = ::GetWinapp().GetInstanceHandle();
-	auto fnProc = reinterpret_cast<DLGPROC>(this->GetSafeCallback());
+	auto fnProc = reinterpret_cast<DLGPROC>(this->GetMineCallback());
 	WNDSPARAM smParam;
 
 	for (;;) {
@@ -165,7 +165,7 @@ BOOL DmDialog::DoModeless(int nIDDItem, HWND hWndParent)
  *	@brief 取得自定義對話框訊息處理 Callback 函數位址
  *	@return <b>型別: LONG_PTR</b> \n 對話框訊息處理 Callback 函數位址
  */
-LONG_PTR DmDialog::GetSafeCallback() const { return reinterpret_cast<LONG_PTR>(DmDialog::SafeDlgProc); }
+LONG_PTR DmDialog::GetMineCallback() const { return reinterpret_cast<LONG_PTR>(DmDialog::StaticDlgProc); }
 
 
 
@@ -273,19 +273,19 @@ BOOL DmDialog::BindWindow(HWND hWnd)
 			break;
 		}
 
-		this->SetSafeHwnd(hWnd);
+		this->SetMineHwnd(hWnd);
 		auto dmPrev = ::GetWindowLongPtr(hWnd, DWLP_DLGPROC);
-		auto dmProc = this->GetSafeCallback();
+		auto dmProc = this->GetMineCallback();
 
 		::SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
 		if (dmPrev != dmProc) {
 			// 指向新的訊息處理 Callback 位址
 			dmPrev = ::SetWindowLongPtr(hWnd, DWLP_DLGPROC, dmProc);
-			this->SetSafePrevCallback(dmPrev);
+			this->SetMinePrevCallback(dmPrev);
 		}
 		break;
 	}
-	return this->GetSafeHwnd() != NULL;
+	return this->GetMineHwnd() != NULL;
 }
 
 /**
@@ -295,16 +295,16 @@ BOOL DmDialog::BindWindow(HWND hWnd)
 void DmDialog::LooseWindow()
 {
 	// 恢復原來的的訊息處理 Callback 函數呼叫位址
-	auto fnCallback = this->GetSafePrevCallback();
+	auto fnCallback = this->GetMinePrevCallback();
 	if (fnCallback != 0) {
 		::SetWindowLongPtr(*this, GWLP_USERDATA, 0);
 		::SetWindowLongPtr(*this, DWLP_DLGPROC, fnCallback);
-		this->SetSafePrevCallback(0);
+		this->SetMinePrevCallback(0);
 	}
 }
 
 /**
- *	@brief 對話框訊息處理函數
+ *	@brief 對話框 (Dialog) 訊息處理 Callback 函數
  *	@param[in] hWndDlg	對話框操作代碼
  *	@param[in] uMessage	對話框訊息
  *	@param[in] wParam	訊息參數, 依據訊息不同而有所不同
@@ -315,7 +315,7 @@ void DmDialog::LooseWindow()
  *	@remark <b>返回值說明</b>
  *		\n 如果對話框處理過程，需要返回特定值，則對話框處理過程應在返回 TRUE 之前立即呼叫 SetWindowLong（hwndDlg，DWL_MSGRESULT，lResult）來設置所需的返回值。
  */
-INT_PTR DmDialog::SafeDlgProc(HWND hWndDlg, UINT uMessage, WPARAM wParam, LPARAM lParam)
+INT_PTR DmDialog::StaticDlgProc(HWND hWndDlg, UINT uMessage, WPARAM wParam, LPARAM lParam)
 {
 	auto dmCtrl = reinterpret_cast<DmDialog*>(::GetWindowLongPtr(hWndDlg, GWLP_USERDATA));
 

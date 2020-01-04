@@ -16,7 +16,7 @@ DmCombo::DmCombo() : DmWnds(EmCtrls::Combo) { }
  *	@brief	DmCombo 解構式
  *	@remark 解構時，進行釋放(銷毀)控制項
  */
-DmCombo::~DmCombo() { this->SafeWndsDestroy(); }
+DmCombo::~DmCombo() { this->DestroyMine(); }
 
 /**
  *	@brief [重載] 建立一個組合框 Combo Box

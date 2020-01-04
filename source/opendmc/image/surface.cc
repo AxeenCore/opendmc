@@ -9,9 +9,10 @@
 
 /**
  *	@brief	DmSurface 建構式
+ *	@return	此函數沒有返回值
  */
 DmSurface::DmSurface()
-	: m_bitPtr(NULL)
+	: m_bitPtr(nullptr)
 	, m_nWidth(0)
 	, m_nHeight(0)
 	, m_nBitCount(0)
@@ -23,6 +24,7 @@ DmSurface::DmSurface()
 
 /**
  *	@brief	DmSurface 解構式
+ *	@return	此函數沒有返回值
  */
 DmSurface::~DmSurface() { this->Release(); }
 
@@ -43,13 +45,11 @@ void DmSurface::Release()
 }
 
 /**
- *	@brief 建立 Surface
+ *	@brief 建立 Surface (繪圖頁)
  *	@param[in]	width		圖形寬度
  *	@param[in]	height		圖形高度
  *	@param[in]	bitCount	色採深度 (單位 Bits)
- *	@return	<b>型別: int</b>
- *		\n 若成功返回值為非零值
- *		\n 若失敗返回值為零
+ *	@return	<b>型別: int</b>	\n 若繪圖頁建立成功，則返回值為非零值。\n 若繪圖頁建立失敗，則返回值為零。
  */
 BOOL DmSurface::CreateSurface(int wd, int ht, int bitCount)
 {
@@ -90,7 +90,7 @@ BOOL DmSurface::CreateSurface(int wd, int ht, int bitCount)
 }
 
 #if defined(ODMC_WINDOWS)
-void DmSurface::TransferToWindow(HWND hWnd)
+void DmSurface::Flip(HWND hWnd)
 {
 	const void* bitPtr = reinterpret_cast<const void*>(m_bitPtr);
 	BITMAPINFO* infoPtr = reinterpret_cast<BITMAPINFO*>(&m_bmInfo);
@@ -104,9 +104,6 @@ void DmSurface::TransferToWindow(HWND hWnd)
 
 		/* Get target window DC (device context) */
 		if ((hDC = ::GetDC(hWnd)) == nullptr) break;
-
-		wd = static_cast<DWORD>(m_nWidth);
-		ht = static_cast<DWORD>(m_nHeight);
 
 		/* draw image to target device contex */
 		::SetDIBitsToDevice(
@@ -127,6 +124,7 @@ void DmSurface::TransferToWindow(HWND hWnd)
 
 	if (hDC) ::ReleaseDC(hWnd, hDC);
 }
+
 #endif
 
 /**
@@ -140,43 +138,44 @@ void DmSurface::TransferToWindow(HWND hWnd)
  */
 int DmSurface::ScanlineLength(int wd, int ht, int bitCount)
 {
-	auto bpp = static_cast<PixelFormat>(bitCount);
+	auto bpp = static_cast<ColorDepth>(bitCount);
 	auto scanline = static_cast<int>(0);
 
 	for (;;) {
-		// is size's parameter supported?
-		if (wd < DMIMG_MINSIZE || wd > DMIMG_MAXSIZE)
+		if (wd < static_cast<int>(ImageSizeLimit::IMG_MINSIZE) ||
+			wd > static_cast<int>(ImageSizeLimit::IMG_MAXSIZE))
 			break;
-		if (ht < DMIMG_MINSIZE || ht > DMIMG_MAXSIZE)
+		if (ht < static_cast<int>(ImageSizeLimit::IMG_MINSIZE) ||
+			ht > static_cast<int>(ImageSizeLimit::IMG_MAXSIZE))
 			break;
 
 		switch (bpp)
 		{
-		case PixelFormat::RGB_1bpp:
+		case ColorDepth::RGB_BPP1:
 			// 1 byte = 8 pixel, ==>> (width + 7) / 8;
 			scanline = (wd + 7) >> 3;
 			break;
 
-		case PixelFormat::RGB_4bpp:
+		case ColorDepth::RGB_BPP4:
 			// 1 byte = 2 pixel, ==>> (width + 1) / 2;
 			scanline = (wd + 1) >> 1;
 			break;
 
-		case PixelFormat::RGB_15bpp:
-		case PixelFormat::RGB_16bpp:
+		case ColorDepth::RGB_BPP15:
+		case ColorDepth::RGB_BPP16:
 			// There are 2 16-bit color mode, (2bytes = 1 pixel)
 			//  (1) 555, RGB R5, G5, B5 --> 0RRRRRGGGGGBBBBB (the highest bit not uses)
 			//  (2) 565, RGB R5, G6, B5 --> RRRRRGGGGGGBBBBB (the green close uses 6-bits)
 			// // ==>> width * (width / 8)
-			if (bpp == PixelFormat::RGB_15bpp) {
-				bitCount = static_cast<int>(PixelFormat::RGB_16bpp);
+			if (bpp == ColorDepth::RGB_BPP15) {
+				bitCount = static_cast<int>(ColorDepth::RGB_BPP16);
 			}
 			scanline = wd * (bitCount >> 3);
 			break;
 
-		case PixelFormat::RGB_8bpp:
-		case PixelFormat::RGB_24bpp:
-		case PixelFormat::RGB_32bpp:
+		case ColorDepth::RGB_BPP8:
+		case ColorDepth::RGB_BPP24:
+		case ColorDepth::RGB_BPP32:
 			// 8-bits, 24-bits, 32-bits, uses same solution to get scan-line
 			// ==>> width * (width / 8)
 			scanline = wd * (bitCount >> 3);
@@ -212,80 +211,75 @@ BOOL DmSurface::SetBmpFileHeader()
  */
 BOOL DmSurface::SetBmpInfoHeader()
 {
-	int res = FALSE;
+	/* 圖像保存區尚未配置 */
+	if (m_bitPtr == nullptr) return FALSE;
 
-	for (;;) {
-		/* 圖像保存區尚未配置 */
-		if (m_bitPtr == NULL) break;
+	/* 定義 BMPINFOHEADER 內容 */
+	::memset(&m_bmInfo, 0, sizeof(m_bmInfo));
+	m_bmInfo.bmiHeader.biSize = sizeof(BMPINFOHEADER);
+	m_bmInfo.bmiHeader.biWidth = m_nWidth;
+	m_bmInfo.bmiHeader.biHeight = -(m_nHeight);	// 標準 BMP 起始座標為左下，若正像圖於 Windows DIB 顯示時將會被反向, 所以要正向顯示必須為高必須為負值。
+	m_bmInfo.bmiHeader.biPlanes = 1;			// must be 1
+	m_bmInfo.bmiHeader.biBitCount = m_nBitCount == static_cast<int>(ColorDepth::RGB_BPP15)
+		? static_cast<WORD>(ColorDepth::RGB_BPP16)
+		: static_cast<WORD>(m_nBitCount);
+	m_bmInfo.bmiHeader.biCompression = BI_RGB;
+	m_bmInfo.bmiHeader.biSizeImage = 0;
+	m_bmInfo.bmiHeader.biXPelsPerMeter = 0;
+	m_bmInfo.bmiHeader.biYPelsPerMeter = 0;
+	m_bmInfo.bmiHeader.biClrUsed = 0;
+	m_bmInfo.bmiHeader.biClrImportant = 0;
 
-		/* 定義 BMPINFOHEADER 內容 */
-		::memset(&m_bmInfo, 0, sizeof(m_bmInfo));
-		m_bmInfo.bmiHeader.biSize = sizeof(BMPINFOHEADER);
-		m_bmInfo.bmiHeader.biWidth = m_nWidth;
-		m_bmInfo.bmiHeader.biHeight = -(m_nHeight);	// 標準 BMP 起始座標為左下，若正像圖於 Windows DIB 顯示時將會被反向, 所以要正向顯示必須為高必須為負值。
-		m_bmInfo.bmiHeader.biPlanes = 1;			// must be 1
-		m_bmInfo.bmiHeader.biBitCount = m_nBitCount == static_cast<int>(PixelFormat::RGB_15bpp)
-			? static_cast<WORD>(PixelFormat::RGB_16bpp)
-			: static_cast<WORD>(m_nBitCount);
-		m_bmInfo.bmiHeader.biCompression = BI_RGB;
-		m_bmInfo.bmiHeader.biSizeImage = 0;
-		m_bmInfo.bmiHeader.biXPelsPerMeter = 0;
-		m_bmInfo.bmiHeader.biYPelsPerMeter = 0;
-		m_bmInfo.bmiHeader.biClrUsed = 0;
+	/* 調色盤定義 */
+	auto Bmpp = static_cast<ColorDepth>(m_nBitCount);
+	UINT32* pQuad = reinterpret_cast<UINT32*>(&m_bmInfo.bmiColors[0]);
+
+	switch (Bmpp)
+	{
+	case ColorDepth::RGB_BPP1:
+		// TBD
+		break;
+
+	case ColorDepth::RGB_BPP4:
+		// TBD
+		break;
+
+	case ColorDepth::RGB_BPP8:
+		// TBD
+		break;
+
+	case ColorDepth::RGB_BPP16:
+		m_bmInfo.bmiHeader.biCompression = BI_BITFIELDS;
+		m_bmInfo.bmiHeader.biClrUsed = 3;
 		m_bmInfo.bmiHeader.biClrImportant = 0;
 
-		/* 調色盤定義 */
-		auto Bmpp = static_cast<PixelFormat>(m_nBitCount);
-		UINT32* pQuad = reinterpret_cast<UINT32*>(&m_bmInfo.bmiColors[0]);
-
-		res = TRUE;
-		switch (Bmpp)
-		{
-		case PixelFormat::RGB_1bpp:
-			// TBD
-			break;
-
-		case PixelFormat::RGB_4bpp:
-			// TBD
-			break;
-
-		case PixelFormat::RGB_8bpp:
-			// TBD
-			break;
-
-		case PixelFormat::RGB_16bpp:
-			m_bmInfo.bmiHeader.biCompression = BI_BITFIELDS;
-			m_bmInfo.bmiHeader.biClrUsed = 3;
-			m_bmInfo.bmiHeader.biClrImportant = 0;
-
-			*(pQuad + 0) = RGB_565_MASK_RED;
-			*(pQuad + 1) = RGB_565_MASK_GREEN;
-			*(pQuad + 2) = RGB_565_MASK_BLUE;
-			break;
-
-		case PixelFormat::RGB_15bpp:
-		case PixelFormat::RGB_24bpp:
-			m_bmInfo.bmiHeader.biCompression = BI_RGB;
-			m_bmInfo.bmiHeader.biClrUsed = 0;
-			m_bmInfo.bmiHeader.biClrImportant = 0;
-			m_bmInfo.bmiHeader.biSizeImage = 0;
-			break;
-
-		case PixelFormat::RGB_32bpp:
-			m_bmInfo.bmiHeader.biCompression = BI_BITFIELDS;
-			m_bmInfo.bmiHeader.biClrUsed = 3;
-			m_bmInfo.bmiHeader.biClrImportant = 0;
-
-			*(pQuad + 0) = RGB_888_MASK_RED;
-			*(pQuad + 1) = RGB_888_MASK_GREEN;
-			*(pQuad + 2) = RGB_888_MASK_BLUE;
-			break;
-
-		default:
-			::memset(&m_bmInfo.bmiHeader, 0, sizeof(BMPINFOHEADER));
-			res = false;
-		}
+		*(pQuad + 0) = static_cast<UINT32>(ColorMask::RGB_565_RED);
+		*(pQuad + 1) = static_cast<UINT32>(ColorMask::RGB_565_GREEN);
+		*(pQuad + 2) = static_cast<UINT32>(ColorMask::RGB_565_BLUE);
 		break;
+
+	case ColorDepth::RGB_BPP15:
+	case ColorDepth::RGB_BPP24:
+		m_bmInfo.bmiHeader.biCompression = BI_RGB;
+		m_bmInfo.bmiHeader.biClrUsed = 0;
+		m_bmInfo.bmiHeader.biClrImportant = 0;
+		m_bmInfo.bmiHeader.biSizeImage = 0;
+		break;
+
+	case ColorDepth::RGB_BPP32:
+		m_bmInfo.bmiHeader.biCompression = BI_BITFIELDS;
+		m_bmInfo.bmiHeader.biClrUsed = 3;
+		m_bmInfo.bmiHeader.biClrImportant = 0;
+
+		*(pQuad + 0) = static_cast<UINT32>(ColorMask::RGB_888_RED);
+		*(pQuad + 1) = static_cast<UINT32>(ColorMask::RGB_888_GREEN);
+		*(pQuad + 2) = static_cast<UINT32>(ColorMask::RGB_888_BLUE);
+		break;
+
+	default:
+		::memset(&m_bmInfo.bmiHeader, 0, sizeof(BMPINFOHEADER));
+		return FALSE;
 	}
-	return res;
+
+	return TRUE;
 }

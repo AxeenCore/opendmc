@@ -35,6 +35,8 @@
 #	include	<thread>
 #	include <vector>
 #	include <map>
+#	include <queue>
+#	include <atomic>
 #endif
 
 /**

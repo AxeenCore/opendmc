@@ -1,49 +1,71 @@
 ﻿/**************************************************************************//**
- * @file	imdefine.hh
+ * @file	imagedef.hh
  * @brief	opendmc_image Herader
  * @date	2010-01-25
  * @date	2019-01-25
  * @author	Swang
  *****************************************************************************/
-#ifndef ODMC_IMAGE_IMDEFINE_HH
-#define	ODMC_IMAGE_IMDEFINE_HH
+#ifndef ODMC_IMAGE_IMAGEDEF_HH
+#define	ODMC_IMAGE_IMAGEDEF_HH
 #include "opendmc/conf/configure.hh"
 
-/* Image surface support line of max pixel */
-#define DMIMG_MINSIZE	1
-#define DMIMG_MAXSIZE	10240
+/**
+ *	@enum	ColorMask
+ *	@brief	影像色彩遮罩
+ */
+enum class ColorMask : UINT32 {
+	RGB_555_RAD		= 0x00007C00,	//!< REB 555 R channel
+	RGB_555_GREEN	= 0x000003E0,	//!< RGB 555 G channel
+	RGB_555_BLUE	= 0x0000001F,	//!< RGB 555 B channel
 
-/* Color mask 555 */
-#define RGB_555_MASK_RED	0x00007C00	//!< REB 555 R channel
-#define	RGB_555_MASK_GREEN	0x000003E0	//!< RGB 555 G channel
-#define	RGB_555_MASK_BLUE	0x0000001F	//!< RGB 555 B channel
+	RGB_565_RED		= 0x0000F800,	//!< RGB 565 R channel
+	RGB_565_GREEN	= 0x000007E0,	//!< RGB 565 G channel
+	RGB_565_BLUE	= 0x0000001F,	//!< RGB 565 B channel
 
-/* Color mask 565 */
-#define RGB_565_MASK_RED    0x0000F800  //!< RGB 565 R channel
-#define RGB_565_MASK_GREEN  0x000007E0  //!< RGB 565 G channel
-#define RGB_565_MASK_BLUE   0x0000001F  //!< RGB 565 B channel
+	RGB_888_RED		= 0x00FF0000,	//!< RGB 888 R channel
+	RGB_888_GREEN	= 0x0000FF00,	//!< RGB 888 G channel
+	RGB_888_BLUE	= 0x000000FF,	//!< RGB 888 B channel
 
-/* Color mask 888 */
-#define RGB_888_MASK_RED    0x00FF0000	//!< RGB 888 R channel
-#define RGB_888_MASK_GREEN  0x0000FF00	//!< RGB 888 G channel
-#define RGB_888_MASK_BLUE   0x000000FF	//!< RGB 888 B channel
+	ARGB_888_ALPHA	= 0xFF000000,	//!< ARGB 888 A
+	ARGB_888_RED	= 0x00FF0000,	//!< ARGB 888 R
+	ARGB_888_GREEN	= 0x0000FF00,	//!< ARGB 888 G
+	ARGB_888_BLUE	= 0x000000FF,	//!< ARBG 888 B
+};
 
-/* Color mask 888 */
-#define ARGB_888_MASK_RED	0x00FF0000	//!< ARGB 888 R
-#define ARGB_888_MASK_GREEN	0x0000FF00	//!< ARGB 888 G
-#define ARGB_888_MASK_BLUE	0x000000FF	//!< ARBG 888 B
-#define ARGB_888_MASK_ALPHA	0xFF000000	//!< ARGB 888 A
+/**
+ *	@enum	ColorDepth
+ *	@brief	Pixel format, 像素色彩深度
+ */
+enum class ColorDepth : UINT32 {
+	RGB_BPP1	= 1,	//!< 2 colors
+	RGB_BPP4	= 4,	//!< 16 colors
+	RGB_BPP8	= 8,	//!< 256 colors
+	RGB_BPP15	= 15,	//!< RGB_555
+	RGB_BPP16	= 16,	//!< RGB 565
+	RGB_BPP24	= 24,	//!< RGB_888
+	RGB_BPP32	= 32,	//!< RGB_888 or ARGB_888
+};
 
-// Convert 16-bits (565) color to 24-bits RGB color
-#define RGB16TORGB24(x)     ( ((( x ) << 8) & 0x00F80000) | ((( x ) << 5) & 0x0000FC00) | ((( x ) << 3) & 0x000000F8) )
+/**
+ *	@enum	ImageSizeLimit
+ *	@brief	影像大小限制，單位 Pixel
+ */
+enum class ImageSizeLimit : UINT32 {
+	IMG_MINSIZE	= 1,
+	IMG_MAXSIZE	= 10240,
+};
 
-// Convert 24-bits RGB color to 16-bits (565) color
-#define RGB24TORGB16(x)     ( ((( x ) & 0x00F80000) >> 8) + ((( x ) & 0x0000FC00) >> 5) + ((( x ) & 0x000000F8) >> 3) )
-
-// Get RGB24 color
+//! Get RGB24 color Red
 #define RGB24RED(x)         ( ((x) & 0x00FF0000) >> 16 )
+//! Get RGB24 color Green
 #define RGB24GREEN(x)       ( ((x) & 0x0000FF00) >> 8 )
+//! Get RGB24 color Blue
 #define RGB24BLUE(x)        ( (x) & 0x000000FF )
+
+//! Convert 16-bits (565) color to 24-bits RGB color
+#define RGB16TORGB24(x)     ( ((( x ) << 8) & 0x00F80000) | ((( x ) << 5) & 0x0000FC00) | ((( x ) << 3) & 0x000000F8) )
+//! Convert 24-bits RGB color to 16-bits (565) color
+#define RGB24TORGB16(x)     ( ((( x ) & 0x00F80000) >> 8) + ((( x ) & 0x0000FC00) >> 5) + ((( x ) & 0x000000F8) >> 3) )
 
 /**
  *	@struct	RGB24
@@ -69,18 +91,16 @@ struct RGB32 {
 typedef RGB32* LPREG32;
 
 /**
- *	@enum	PixelFormat
- *	@brief	列舉色彩深度, 單位 bit
+ *	@struct ARGB32
+ *	@brief	RGB 888 with aplpha channel
  */
-enum class PixelFormat {
-	RGB_1bpp	= 1,	//!< 2 colors
-	RGB_4bpp	= 4,	//!< 16 colors
-	RGB_8bpp	= 8,	//!< 256 colors
-	RGB_15bpp	= 15,	//!< RGB_555
-	RGB_16bpp	= 16,	//!< RGB 565
-	RGB_24bpp	= 24,	//!< RGB_888
-	RGB_32bpp	= 32,	//!< RGB_888 or ARGB_888
+struct ARGB32 {
+	UINT8	Alpha;		//!< Alpha
+	UINT8	Red;		//!< R
+	UINT8	Green;		//!< G
+	UINT8	Blue;		//!< B
 };
+typedef ARGB32* LPAREG32;
 
 /* 強制編譯氣採用對其方式 Bitmap 結構若被自動使用預設對齊將造成資料位置不正確 如 Visual Studio 2010 資料預設對齊為 4-byte */
 #if defined(ODMC_WINDOWS)
@@ -165,11 +185,12 @@ typedef BMPINFOHEADER* LPBMPINFOHEADER;
  *	@brief	描述 Bitmap 一個像素的色彩內容
  */
 struct BMPRGBQUAD {
-	BYTE rgbBlue;				//!< 藍色通道
-	BYTE rgbGreen;				//!< 綠色通道
-	BYTE rgbRed;				//!< 紅色通道
-	BYTE rgbReserved;			//!< 保留
+	UINT8 rgbBlue;				//!< 藍色通道
+	UINT8 rgbGreen;				//!< 綠色通道
+	UINT8 rgbRed;				//!< 紅色通道
+	UINT8 rgbReserved;			//!< 保留
 };
+typedef BMPRGBQUAD* LPBMPRGBQUAD;
 
 /**
  *	@struct	BMPINFO
@@ -188,4 +209,4 @@ typedef BMPINFO* LPBMPINFO;
 #pragma pack()
 #endif
 
-#endif // !ODMC_IMAGE_IMDEFINE_HH
+#endif // !ODMC_IMAGE_IMAGEDEF_HH

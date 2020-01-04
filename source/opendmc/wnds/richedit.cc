@@ -19,7 +19,7 @@ DmRichEdit::DmRichEdit() : DmWnds(EmCtrls::RichEdit) { }
  *	@return	此函數沒有返回值
  *	@remark	解構時釋放(銷毀)控制項資源。
  */
-DmRichEdit::~DmRichEdit() { this->SafeWndsDestroy(); }
+DmRichEdit::~DmRichEdit() { this->DestroyMine(); }
 
 /**
  *	@brief	Enables or disables automatic detection of URLs by a rich edit control.

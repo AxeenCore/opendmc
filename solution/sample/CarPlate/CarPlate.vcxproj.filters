@@ -15,24 +15,30 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\source\sample\HSLPR\lpr_apps.cc">
+    <ClCompile Include="..\..\..\source\sample\CarPlate\apps.cc">
       <Filter>來源檔案</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\source\sample\HSLPR\lpr_frame.cc">
+    <ClCompile Include="..\..\..\source\sample\CarPlate\main.cc">
       <Filter>來源檔案</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\source\sample\HSLPR\lpr_main.cc">
+    <ClCompile Include="..\..\..\source\sample\CarPlate\detection.cc">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\sample\CarPlate\mainform.cc">
       <Filter>來源檔案</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\source\sample\HSLPR\lpr_apps.hh">
+    <ClInclude Include="..\..\..\source\sample\CarPlate\apps.hh">
       <Filter>標頭檔</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\source\sample\HSLPR\lpr_frame.hh">
+    <ClInclude Include="..\..\..\source\sample\CarPlate\carplate.hh">
       <Filter>標頭檔</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\source\sample\HSLPR\lpr_define.hh">
+    <ClInclude Include="..\..\..\source\sample\CarPlate\detection.hh">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\sample\CarPlate\mainform.hh">
       <Filter>標頭檔</Filter>
     </ClInclude>
   </ItemGroup>

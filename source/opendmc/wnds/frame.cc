@@ -11,4 +11,4 @@
 DmFrame::DmFrame() : DmWnds() { }
 
 //! DmFrame 解構式
-DmFrame::~DmFrame() { this->SafeWndsDestroy(); }
+DmFrame::~DmFrame() { this->DestroyMine(); }

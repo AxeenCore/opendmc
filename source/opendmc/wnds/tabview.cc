@@ -16,7 +16,7 @@ DmTabView::DmTabView() : DmWnds(EmCtrls::TabControl) { }
  *	@brief DmTabView 解構式
  *	@remark 解構時進行釋放(摧毀)控制項 
  */
-DmTabView::~DmTabView() { this->SafeWndsDestroy(); }
+DmTabView::~DmTabView() { this->DestroyMine(); }
 
 /**
  *	@brief [重載] 建立一個組合框 Combo Box

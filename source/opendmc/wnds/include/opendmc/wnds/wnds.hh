@@ -26,12 +26,13 @@ public:
 
 	virtual BOOL Create(const TCHAR* szPtr, int x, int y, int wd, int ht, HWND hWndParent, int nIDCItem);
 	virtual BOOL CreateEx(DWORD dwExStyle, const TCHAR* szClassPtr, const TCHAR* szCaptionPtr, DWORD dwStyle, int x, int y, int wd, int ht, HWND hWndParent, HMENU hMenuOrIDDItem, void* vParamPtr);
+	virtual BOOL CreateMine();
 
-	virtual EmCtrls		GetSafeType() const;
-	virtual HWND		GetSafeHwnd() const;
-	virtual HFONT		GetSafeFont() const;
-	virtual LONG_PTR	GetSafeCallback() const;
-	virtual LONG_PTR	GetSafePrevCallback() const;
+	virtual EmCtrls		GetMineType() const;
+	virtual HWND		GetMineHwnd() const;
+	virtual HFONT		GetMineFont() const;
+	virtual LONG_PTR	GetMineCallback() const;
+	virtual LONG_PTR	GetMinePrevCallback() const;
 
 	BOOL CreateFrame(const WNDSFRAME* smPtr);
 	BOOL CreateControls(const WNDSCTRLS* smPtr);
@@ -61,6 +62,7 @@ public:
 	BOOL	DeleteFont(HFONT hFont);
 
 	BOOL	DisableWindow() const;
+	bool	DisplayBitmap(int x, int y, int wd, int ht, BITMAPINFO* bmiPtr, void* dataPtr) const;
 	int		DlgDirList(TCHAR* szPathSpecPtr, int nIDListBox, int nIDStaticPath, UINT uFileType) const;
 	int		DlgDirListComboBox(TCHAR* szPathSpecPtr, int nIDComboBox, int nIDStaticPath, UINT uFileType) const;
 	BOOL	DlgDirSelectEx(TCHAR* strPtr, int chCount, int idListBox) const;
@@ -146,7 +148,7 @@ public:
 	void	MapWindowPoints(HWND hWndTo, POINT* ptPtr, UINT uPoints) const;
 	void	MapWindowPoints(HWND hWndTo, POINT* ptPtr) const;
 	void	MapWindowPoints(HWND hWndTo, RECT* rcPtr) const;
-	int		MessageBox(const TCHAR* textPtr, const TCHAR* szCaptionPtr = NULL, UINT uType = MB_OK) const;
+	int		MessageBox(const TCHAR* textPtr, const TCHAR* captionPtr = NULL, UINT uType = MB_OK) const;
 	BOOL	ModifyStyle(DWORD dwRemove, DWORD dwAdd, UINT uFlags = 0) const;
 	BOOL	ModifyStyleEx(DWORD dwRemove, DWORD dwAdd, UINT uFlags = 0) const;
 	BOOL	MoveWindow(int x, int y, int nWidth, int nHeight, BOOL bRepaint = TRUE) const;
@@ -220,17 +222,17 @@ protected:
 	virtual void	WmUserCreate(WPARAM wParam, LPARAM lParam);
 	virtual LRESULT WndProc(UINT uMessage, WPARAM wParam, LPARAM lParam);
 
-	virtual void SetSafeType(EmCtrls eType);
-	virtual void SetSafeFont(HFONT hFont);
-	virtual void SetSafeHwnd(HWND hWnd);
-	virtual void SetSafePrevCallback(LONG_PTR lCallback);
+	virtual void SetMineType(EmCtrls eType);
+	virtual void SetMineFont(HFONT hFont);
+	virtual void SetMineHwnd(HWND hWnd);
+	virtual void SetMinePrevCallback(LONG_PTR lCallback);
 	virtual BOOL BindWindow(HWND hWnd);
 	virtual void LooseWindow();
 
 	/* Destory window and release */
-	void SafeWndsDestroy(int nExitCode = 0);
-	void SafeWndsRelease();
-	void SafeWndsWaiting();
+	void DestroyMine(int nExitCode = 0);
+	void ReleaseMine();
+	void DestroyWaiting();
 
 	BOOL SafeRegisterClass(const WNDSFRAME* smPtr);
 	HWND SafeCreateWindows(const WNDSFRAME* smPtr);
@@ -249,7 +251,7 @@ private:
 	DmWnds(const DmWnds&) = delete;				//!< Disable copy construction
 	DmWnds& operator=(const DmWnds&) = delete;	//!< Disable assignment operator
 	void InitCommControls() const;
-	static LRESULT CALLBACK SafeWndProc(HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam);
+	static LRESULT CALLBACK StaticWndProc(HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam);
 };
 
 
